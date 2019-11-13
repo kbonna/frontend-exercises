@@ -1,0 +1,184 @@
+$ff: 'Cabin', sans-serif;
+$fs: 3rem;
+$l: 8rem;
+
+$col-t1: #DDD;
+$col-t2: #AAA;
+$col-t3: #555;
+$col-t4: #111;
+
+$col-b1: #C4DFE6;
+$col-b2: #66A5AD;
+$col-b3: #07575B;
+$col-b4: #003B46;
+
+$duration: 250ms;
+$fade-time: 250ms;
+$fade-wait: 250ms;
+
+/*--- Styling ---*/
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    font-family: $ff;
+}
+
+.element {
+    box-shadow: 0 0 10px rgba(0, 0, 0, .25);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.box {
+    width: $l;
+    height: $l;
+    line-height: $l;
+    text-align: center;
+    position: relative;
+}
+
+.box::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: -1;
+}
+
+/*--- Box Colors ---*/
+
+.box--t1 {
+    color: $col-t4;
+}
+.box--t1::after {
+    background: $col-t1;
+}
+.box--t2 {
+    color: $col-t3;
+}
+.box--t2::after {
+    background: $col-t2;
+}
+.box--t3 {
+    color: $col-t2;
+}
+.box--t3::after {
+    background: $col-t3;
+}
+.box--t4 {
+    color: $col-t1;
+}
+.box--t4::after {
+    background: $col-t4;
+}
+.box--b1 {
+    color: $col-b4;
+}
+.box--b1::after {
+    background: $col-b1;
+}
+.box--b2 {
+    color: $col-b3;
+}
+.box--b2::after {
+    background: $col-b2;
+}
+.box--b3 {
+    color: $col-b2;
+}
+.box--b3::after {
+    background: $col-b3;
+}
+.box--b4 {
+    color: $col-b1;
+}
+.box--b4::after {
+    background: $col-b4;
+}
+
+/*--- Background Animation ---*/
+
+@mixin slide-in($onset) {
+    transform: scaleX(1);
+    transform-origin: left;
+    transition: $duration transform linear $onset;
+}
+
+@mixin slide-out($onset) {
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: $duration transform linear $onset;
+}
+
+.box--1::after {
+    @include slide-out(calc(0 * #{$duration}))
+}
+.element:hover .box--1::after {
+    @include slide-in(calc(0 * #{$duration}))
+}
+.box--2::after {
+    @include slide-out(calc(1 * #{$duration}))
+}
+.element:hover .box--2::after {
+    @include slide-in(calc(1 * #{$duration}))
+}
+.box--3::after {
+    @include slide-out(calc(2 * #{$duration}))
+}
+.element:hover .box--3::after {
+    @include slide-in(calc(2 * #{$duration}))
+}
+.box--4::after {
+    @include slide-out(calc(3 * #{$duration}))
+}
+.element:hover .box--4::after {
+    @include slide-in(calc(3 * #{$duration}))
+}
+
+/*--- Text Animation ---*/
+
+@mixin fade-in($onset) {
+    font-size: $fs;
+    transition: $fade-time font-size $onset;
+}
+
+@mixin fade-out($onset) {
+    font-size: 0;
+    transition: 0ms font-size $onset;    
+}
+
+.box--1 {
+    @include fade-out(calc(0 * #{$duration}));
+}
+.element:hover .box--1 {
+    @include fade-in(calc(0 * #{$duration} + #{$fade-wait}));
+}
+.box--2 {
+    @include fade-out(calc(1 * #{$duration}));
+}
+.element:hover .box--2 {
+    @include fade-in(calc(1 * #{$duration} + #{$fade-wait}));
+}
+.box--3 {
+    @include fade-out(calc(2 * #{$duration}));
+}
+.element:hover .box--3 {
+    @include fade-in(calc(2 * #{$duration} + #{$fade-wait}));
+}
+.box--4 {
+    @include fade-out(calc(3 * #{$duration}));
+}
+.element:hover .box--4 {
+    @include fade-in(calc(3 * #{$duration} + #{$fade-wait}));
+}

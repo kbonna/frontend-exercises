@@ -1,0 +1,118 @@
+* {
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+body {
+  font-family: "Cabin", sans-serif;
+  height: 100vh;
+  background-image: url("img/background.jpg");
+  background-size: 100% 100%;
+}
+
+header {
+  background-color: white;
+  margin: 1em;
+  padding: 20px;
+  position: relative;
+  border-radius: 5px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+header h1 {
+  color: #7b072e;
+  letter-spacing: .1em;
+  font-size: 2.25rem;
+}
+
+header .burger {
+  position: relative;
+}
+
+header .burger div {
+  width: 25px;
+  height: 4px;
+  margin: 3px;
+  background-color: #7b072e;
+}
+
+header nav {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  -webkit-transform: translateY(95%);
+          transform: translateY(95%);
+  background-color: white;
+}
+
+header nav ul {
+  list-style-type: none;
+}
+
+header nav ul li a {
+  display: block;
+  font-size: 1.75rem;
+  color: #7b072e;
+  text-decoration: none;
+  text-align: center;
+  padding: 10px 0;
+  margin: 20px;
+}
+
+header nav ul li a:hover {
+  background-color: #7b072e;
+  color: white;
+}
+
+.rotate_c {
+  -webkit-transform: translateY(3px) rotate(45deg);
+          transform: translateY(3px) rotate(45deg);
+}
+
+.rotate_a {
+  -webkit-transform: translateY(-4px) rotate(-45deg);
+          transform: translateY(-4px) rotate(-45deg);
+}
+
+@media screen and (min-width: 750px) {
+  .burger {
+    display: none;
+  }
+  header nav {
+    display: block;
+    position: static;
+    -webkit-transform: none;
+            transform: none;
+    width: auto;
+  }
+  header nav ul {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: end;
+        -ms-flex-pack: end;
+            justify-content: flex-end;
+  }
+  header nav ul li a {
+    padding: 0;
+    margin: 0 0 0 2em;
+  }
+  header nav ul li a:hover {
+    color: white;
+    background-color: white;
+    text-shadow: 0 0 7px #7b072e;
+  }
+}
+/*# sourceMappingURL=style.css.map */

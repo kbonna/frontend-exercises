@@ -1,0 +1,228 @@
+:root {
+  --col-red: #e63946;
+  --col-dark: #1d3557;
+  --col-medium: #457b9d;
+  --col-light: #a8dadc;
+  --col-grey: #f1faee;
+  --font: 'DM Sans', sans-serif;
+}
+
+*, *::after, *::before {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--col-light);
+  height: 100vh;
+  font-family: var(--font);
+  display: -ms-grid;
+  display: grid;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.todo {
+  color: var(--col-grey);
+  background: var(--col-dark);
+  padding: 2em;
+  -webkit-box-shadow: 0 0 10px 0 var(--col-dark);
+          box-shadow: 0 0 10px 0 var(--col-dark);
+}
+
+.todo > * {
+  margin-bottom: 2em;
+}
+
+.todo > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Todo Header */
+.todo__header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+}
+
+.todo__title {
+  letter-spacing: 1px;
+}
+
+.todo__left {
+  padding-left: 1em;
+  opacity: .5;
+}
+
+/* Todo Body */
+[type="checkbox"] {
+  opacity: 0;
+  position: absolute;
+}
+
+.todo__task {
+  margin-bottom: 1.75em;
+  position: relative;
+}
+
+.todo__task label {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.todo__task label::after {
+  content: '';
+  position: absolute;
+  left: 2em;
+  right: 0;
+  height: 1px;
+  background: var(--col-grey);
+  z-index: 1;
+  -webkit-transform: scaleY(0);
+          transform: scaleY(0);
+  -webkit-transform-origin: left;
+          transform-origin: left;
+  -webkit-transition: -webkit-transform 100ms ease-in;
+  transition: -webkit-transform 100ms ease-in;
+  transition: transform 100ms ease-in;
+  transition: transform 100ms ease-in, -webkit-transform 100ms ease-in;
+}
+
+.todo__task::after {
+  content: '';
+  position: absolute;
+  height: 1px;
+  bottom: -1em;
+  left: 0;
+  right: 0;
+  background: var(--col-light);
+  opacity: .2;
+}
+
+.todo__checkbox {
+  display: inline-block;
+  border: 1px solid var(--col-grey);
+  border-radius: 50%;
+  width: 1em;
+  height: 1em;
+  margin-right: 1em;
+}
+
+.todo__task:hover .todo__checkbox,
+[type="checkbox"]:focus + label .todo__checkbox {
+  -webkit-transform: scale(1.2);
+          transform: scale(1.2);
+  -webkit-transition: -webkit-transform 100ms ease-in;
+  transition: -webkit-transform 100ms ease-in;
+  transition: transform 100ms ease-in;
+  transition: transform 100ms ease-in, -webkit-transform 100ms ease-in;
+}
+
+[type="checkbox"]:checked + label .todo__checkbox {
+  background: var(--col-grey);
+  -webkit-box-shadow: 0 0 0 3px var(--col-dark) inset;
+          box-shadow: 0 0 0 3px var(--col-dark) inset;
+}
+
+[type="checkbox"]:checked + label {
+  opacity: .25;
+}
+
+[type="checkbox"]:checked + label::after {
+  -webkit-transform: scaleY(1);
+          transform: scaleY(1);
+}
+
+/* Todo Add */
+.todo__add form {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: end;
+      -ms-flex-align: end;
+          align-items: flex-end;
+}
+
+.todo__new-task {
+  -webkit-box-ordinal-group: 2;
+      -ms-flex-order: 1;
+          order: 1;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--col-grey);
+  color: inherit;
+  line-height: 1.5;
+  -webkit-transition: color 100ms ease-in;
+  transition: color 100ms ease-in;
+}
+
+.todo__new-task:focus {
+  color: var(--col-medium);
+}
+
+.button--add {
+  -webkit-box-ordinal-group: 1;
+      -ms-flex-order: 0;
+          order: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font-weight: bold;
+  font-size: 1.5em;
+  margin-right: .5em;
+  -webkit-transition: color 100ms ease-in;
+  transition: color 100ms ease-in;
+}
+
+.button--add:hover {
+  color: var(--col-medium);
+}
+
+.button {
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+/* Todo Buttons */
+.todo__buttons {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.button--clear,
+.button--delete {
+  color: var(--col-grey);
+  -webkit-transition: color 100ms ease-in;
+  transition: color 100ms ease-in;
+}
+
+.button--clear:hover,
+.button--delete:hover {
+  color: var(--col-red);
+}
+/*# sourceMappingURL=style.css.map */

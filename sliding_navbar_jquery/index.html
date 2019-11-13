@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://fonts.googleapis.com/css?family=Cabin&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css"> 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <title>Simple Responsive Navbar</title>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>Simple</h1>
+        </div>
+        <div class="burger">
+            <div class="b-top"></div>
+            <div id="b-mid"></div>
+            <div class="b-bot"></div>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#">Projects</a></li>
+                <li><a href="#">Staff</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+
+    </main>
+</body>
+
+<script>
+    $('.burger').click(function() {
+        $('nav').toggle();
+        $('#b-mid').toggle();
+        $('.b-top').toggleClass('rotate_c');
+        $('.b-bot').toggleClass('rotate_a');
+    });
+</script>
+
+</html>

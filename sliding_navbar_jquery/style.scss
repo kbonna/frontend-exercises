@@ -1,0 +1,121 @@
+$ff: 'Cabin', sans-serif;
+$white: white;
+$accent: rgb(123, 7, 46);
+$spacing: 20px;
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: $ff;
+    height: 100vh;
+    background-image: url('img/background.jpg');
+    background-size: 100% 100%;
+}
+
+header {
+    background-color: $white;
+    margin: 1em;
+    padding: $spacing;
+    position: relative;
+    border-radius: 5px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h1 {
+        color: $accent;
+        letter-spacing: .1em;
+        font-size: 2.25rem;
+    }
+
+    .burger {
+        position: relative;
+    }
+
+    .burger div {
+        width: 25px;
+        height: 4px;
+        margin: 3px;
+        background-color: $accent;
+    }
+
+    nav {
+        display: none;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        transform: translateY(95%);
+        background-color:$white;
+        
+        ul {
+            list-style-type: none;            
+        
+            li {
+
+                a {
+                    display: block;
+                    font-size: 1.75rem;
+                    color: $accent;
+                    text-decoration: none;                    
+                    text-align: center;
+                    padding: 10px 0;
+                    margin: $spacing;
+                }
+
+                a:hover {
+                    background-color: $accent;
+                    color: $white;
+                }
+            }
+        }
+    }
+}
+
+.rotate_c {
+    transform: translateY(3px) rotate(45deg);;
+
+}
+.rotate_a {
+    transform: translateY(-4px) rotate(-45deg);
+}
+
+@media screen and (min-width: 750px) {
+
+    .burger {
+        display: none;
+    }
+
+    header {
+
+        nav {
+            display: block;
+            position: static;
+            transform: none;
+            width: auto;
+
+            ul {
+            display: flex;
+            justify-content: flex-end;
+            
+            li {
+                a {
+                    padding: 0;
+                    margin: 0 0 0 2em;
+                }
+
+                a:hover {
+                    color: $white;
+                    background-color: $white;
+                    text-shadow: 0 0 7px $accent;
+                    }
+                }
+            }
+        }
+    }
+}

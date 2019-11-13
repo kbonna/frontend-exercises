@@ -1,0 +1,189 @@
+:root {
+    --col-red: #e63946;
+    --col-dark: #1d3557;
+    --col-medium: #457b9d;
+    --col-light: #a8dadc;
+    --col-grey: #f1faee;
+
+    --font: 'DM Sans', sans-serif;
+}
+
+*, *::after, *::before {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: var(--col-light);
+    height: 100vh;
+    font-family: var(--font);
+    display: grid;
+    justify-content: center;
+    align-items: center;
+}
+
+.todo {
+    color: var(--col-grey);
+    background: var(--col-dark);
+    padding: 2em;
+    box-shadow: 0 0 10px 0 var(--col-dark);
+}
+
+// Margins within todo div
+.todo > * {
+    margin-bottom: 2em;
+}
+
+.todo > *:last-child {
+    margin-bottom: 0;
+}
+
+/* Todo Header */
+.todo__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.todo__title {
+    letter-spacing: 1px;
+}
+
+.todo__left {
+    padding-left: 1em;
+    opacity: .5;
+}
+
+/* Todo Body */
+
+[type="checkbox"] {
+    opacity: 0;
+    position: absolute;
+}
+
+.todo__task {
+    margin-bottom: 1.75em;
+    position: relative;
+}
+
+.todo__task label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    // border: 1px pink solid;
+} 
+
+.todo__task label::after {
+    content: '';
+    position: absolute;
+    left: 2em;
+    right: 0;
+    height: 1px;
+    background: var(--col-grey);
+    z-index: 1;
+    transform: scaleY(0);
+    transform-origin: left;
+    transition: transform 100ms ease-in
+}
+
+.todo__task::after {
+    content: '';
+    position: absolute;
+    height: 1px;
+    bottom: -1em;
+    left: 0;
+    right: 0;
+    background: var(--col-light);
+    opacity: .2;
+}
+
+.todo__checkbox {
+    display: inline-block;
+    border: 1px solid var(--col-grey);
+    border-radius: 50%;
+    width: 1em;
+    height: 1em;
+    margin-right: 1em;
+}
+
+.todo__task:hover .todo__checkbox,
+[type="checkbox"]:focus + label .todo__checkbox{
+    transform: scale(1.2);
+    transition: transform 100ms ease-in;
+}
+
+// checked
+[type="checkbox"]:checked + label .todo__checkbox{
+    background: var(--col-grey);
+    box-shadow: 0 0 0 3px var(--col-dark) inset;
+}
+
+[type="checkbox"]:checked + label {
+    opacity: .25;
+}
+
+[type="checkbox"]:checked + label::after {
+    transform: scaleY(1);
+}
+
+/* Todo Add */
+.todo__add form {
+    display: flex;
+    align-items: flex-end;
+}
+
+.todo__new-task {
+    order: 1;
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--col-grey);
+    color: inherit;
+    line-height: 1.5;
+    transition: color 100ms ease-in;
+}
+
+.todo__new-task:focus {
+    color: var(--col-medium);
+}
+
+.button--add {
+    order: 0;
+    background: none;
+    border: none;
+    color: inherit;
+    font-weight: bold;
+    font-size: 1.5em;
+    margin-right: .5em;
+    transition: color 100ms ease-in;
+}
+
+.button--add:hover {
+    color: var(--col-medium);
+}
+
+.button {
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+/* Todo Buttons */
+
+.todo__buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.button--clear,
+.button--delete {
+    color: var(--col-grey);
+    transition: color 100ms ease-in;
+}
+
+.button--clear:hover,
+.button--delete:hover {
+    color: var(--col-red)
+}

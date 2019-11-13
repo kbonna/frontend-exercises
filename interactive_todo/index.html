@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=DM+Sans:400,700&display=swap" rel="stylesheet">
+    <title>Todo list</title>
+</head>
+<body>
+    <div class="todo">
+        <div class="todo__header">
+            <h1 class="todo__title">Grocery</h1>
+            <p class="todo__left">5 items left</p>
+        </div>
+        <div class="todo__body">
+            <div class="todo__task">
+                <input type="checkbox" id="task-1">
+                <label for="task-1"><span class="todo__checkbox"></span>bananas</label>
+            </div>
+            <div class="todo__task">
+                <input type="checkbox" id="task-2">
+                <label for="task-2"><span class="todo__checkbox"></span>peaches</label>
+            </div>
+            <div class="todo__task">
+                <input type="checkbox" id="task-3">
+                <label for="task-3"><span class="todo__checkbox"></span>big tasty melons</label>
+            </div>
+        </div>
+        <div class="todo__add">
+            <form action="">
+                <input
+                    type="text"
+                    class='todo__new-task'
+                    placeholder="new task name"
+                    aria-label="new task name"
+                />
+            <button class="button button--add">+</button>
+            </form>
+        </div>
+        <div class="todo__buttons">
+            <button class="button button--clear">Clear completed</button>
+            <button class="button button--delete">Remove all tasks</button>
+        </div>
+    </div>
+</body>
+</html>

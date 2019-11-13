@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css?family=Cinzel:400,700|Rajdhani:400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <title>Horse Cards</title>
+</head>
+<body>
+    <!-- Horse 1 -->
+    <div class="card">
+        <div class="card__img">
+            <img src="img/horse_black.png" alt="Black horse">
+        </div>  
+        <div class="card__content">
+            <h1 class="card__title">Shadow</h1>
+            <p class="card__subtitle">an unpredictable beast</p>
+            <p class="card__desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptas molestias libero, sunt adipisci, rerum, assumenda dolorem natus corporis animi maxime labore quasi nisi impedit nam hic atque harum. Optio, iure.</p>
+            <div class="card__bar">
+                    <p class="card__rating">7/10</p>
+            </div>
+        </div>
+    </div>
+    <!-- Horse 2 -->
+    <div class="card">
+        <div class="card__img">
+            <img src="img/horse_brown.png" alt="Brown horse">
+        </div>
+        <div class="card__content">
+            <h1 class="card__title">Danny</h1>
+            <p class="card__subtitle">mild and lazy</p>
+            <p class="card__desc">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Culpa, distinctio laboriosam excepturi assumenda, incidunt atque placeat consequuntur delectus nam cumque, reiciendis tempore minima ea sint? Totam animi sunt quas alias?</p>
+            <div class="card__bar">
+                    <p class="card__rating">4/10</p>
+            </div>
+        </div>
+    </div>
+    <!-- Horse 3 -->
+    <div class="card">
+        <div class="card__img">
+            <img src="img/horse_white.png" alt="White horse">
+        </div>
+        <div class="card__content">
+            <h1 class="card__title">Ice Queen</h1>
+            <p class="card__subtitle">strong and reliable</p>
+            <p class="card__desc">Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga ipsam temporibus dolor cum nulla voluptate, assumenda quisquam asperiores adipisci delectus aut iure minima, magni, harum quos alias vel voluptatum dignissimos.</p>
+            <div class="card__bar">
+                <p class="card__rating">8/10</p>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script>
+    // Bar width based on tag content
+    for (i=0; i<3; i++){
+        var selector = '.card__rating:eq(*)'.replace('*', i);
+        var rating = $(selector).text()[0];
+        var width = (rating*10).toString().concat('%');
+        $(selector).css('width', width)   
+    }
+
+    // Hover effect
+    $('.card').hover(
+        function () {$(this).addClass('card--hover')},
+        function () {$(this).removeClass('card--hover')}
+    )
+
+    // Select effect
+    $('.card').click(function () {
+        $(this).toggleClass('card--selected')
+    });
+</script>
+
+</html>

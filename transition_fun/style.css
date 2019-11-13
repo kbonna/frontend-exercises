@@ -1,0 +1,249 @@
+/*--- Styling ---*/
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  display: -ms-grid;
+  display: grid;
+  justify-items: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  font-family: "Cabin", sans-serif;
+}
+
+.element {
+  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (1fr)[4];
+      grid-template-columns: repeat(4, 1fr);
+}
+
+.box {
+  width: 8rem;
+  height: 8rem;
+  line-height: 8rem;
+  text-align: center;
+  position: relative;
+}
+
+.box::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: -1;
+}
+
+/*--- Box Colors ---*/
+.box--t1 {
+  color: #111;
+}
+
+.box--t1::after {
+  background: #DDD;
+}
+
+.box--t2 {
+  color: #555;
+}
+
+.box--t2::after {
+  background: #AAA;
+}
+
+.box--t3 {
+  color: #AAA;
+}
+
+.box--t3::after {
+  background: #555;
+}
+
+.box--t4 {
+  color: #DDD;
+}
+
+.box--t4::after {
+  background: #111;
+}
+
+.box--b1 {
+  color: #003B46;
+}
+
+.box--b1::after {
+  background: #C4DFE6;
+}
+
+.box--b2 {
+  color: #07575B;
+}
+
+.box--b2::after {
+  background: #66A5AD;
+}
+
+.box--b3 {
+  color: #66A5AD;
+}
+
+.box--b3::after {
+  background: #07575B;
+}
+
+.box--b4 {
+  color: #C4DFE6;
+}
+
+.box--b4::after {
+  background: #003B46;
+}
+
+/*--- Background Animation ---*/
+.box--1::after {
+  -webkit-transform: scaleX(0);
+          transform: scaleX(0);
+  -webkit-transform-origin: right;
+          transform-origin: right;
+  -webkit-transition: 250ms -webkit-transform linear calc(0 * 250ms);
+  transition: 250ms -webkit-transform linear calc(0 * 250ms);
+  transition: 250ms transform linear calc(0 * 250ms);
+  transition: 250ms transform linear calc(0 * 250ms), 250ms -webkit-transform linear calc(0 * 250ms);
+}
+
+.element:hover .box--1::after {
+  -webkit-transform: scaleX(1);
+          transform: scaleX(1);
+  -webkit-transform-origin: left;
+          transform-origin: left;
+  -webkit-transition: 250ms -webkit-transform linear calc(0 * 250ms);
+  transition: 250ms -webkit-transform linear calc(0 * 250ms);
+  transition: 250ms transform linear calc(0 * 250ms);
+  transition: 250ms transform linear calc(0 * 250ms), 250ms -webkit-transform linear calc(0 * 250ms);
+}
+
+.box--2::after {
+  -webkit-transform: scaleX(0);
+          transform: scaleX(0);
+  -webkit-transform-origin: right;
+          transform-origin: right;
+  -webkit-transition: 250ms -webkit-transform linear calc(1 * 250ms);
+  transition: 250ms -webkit-transform linear calc(1 * 250ms);
+  transition: 250ms transform linear calc(1 * 250ms);
+  transition: 250ms transform linear calc(1 * 250ms), 250ms -webkit-transform linear calc(1 * 250ms);
+}
+
+.element:hover .box--2::after {
+  -webkit-transform: scaleX(1);
+          transform: scaleX(1);
+  -webkit-transform-origin: left;
+          transform-origin: left;
+  -webkit-transition: 250ms -webkit-transform linear calc(1 * 250ms);
+  transition: 250ms -webkit-transform linear calc(1 * 250ms);
+  transition: 250ms transform linear calc(1 * 250ms);
+  transition: 250ms transform linear calc(1 * 250ms), 250ms -webkit-transform linear calc(1 * 250ms);
+}
+
+.box--3::after {
+  -webkit-transform: scaleX(0);
+          transform: scaleX(0);
+  -webkit-transform-origin: right;
+          transform-origin: right;
+  -webkit-transition: 250ms -webkit-transform linear calc(2 * 250ms);
+  transition: 250ms -webkit-transform linear calc(2 * 250ms);
+  transition: 250ms transform linear calc(2 * 250ms);
+  transition: 250ms transform linear calc(2 * 250ms), 250ms -webkit-transform linear calc(2 * 250ms);
+}
+
+.element:hover .box--3::after {
+  -webkit-transform: scaleX(1);
+          transform: scaleX(1);
+  -webkit-transform-origin: left;
+          transform-origin: left;
+  -webkit-transition: 250ms -webkit-transform linear calc(2 * 250ms);
+  transition: 250ms -webkit-transform linear calc(2 * 250ms);
+  transition: 250ms transform linear calc(2 * 250ms);
+  transition: 250ms transform linear calc(2 * 250ms), 250ms -webkit-transform linear calc(2 * 250ms);
+}
+
+.box--4::after {
+  -webkit-transform: scaleX(0);
+          transform: scaleX(0);
+  -webkit-transform-origin: right;
+          transform-origin: right;
+  -webkit-transition: 250ms -webkit-transform linear calc(3 * 250ms);
+  transition: 250ms -webkit-transform linear calc(3 * 250ms);
+  transition: 250ms transform linear calc(3 * 250ms);
+  transition: 250ms transform linear calc(3 * 250ms), 250ms -webkit-transform linear calc(3 * 250ms);
+}
+
+.element:hover .box--4::after {
+  -webkit-transform: scaleX(1);
+          transform: scaleX(1);
+  -webkit-transform-origin: left;
+          transform-origin: left;
+  -webkit-transition: 250ms -webkit-transform linear calc(3 * 250ms);
+  transition: 250ms -webkit-transform linear calc(3 * 250ms);
+  transition: 250ms transform linear calc(3 * 250ms);
+  transition: 250ms transform linear calc(3 * 250ms), 250ms -webkit-transform linear calc(3 * 250ms);
+}
+
+/*--- Text Animation ---*/
+.box--1 {
+  font-size: 0;
+  -webkit-transition: 0ms font-size calc(0 * 250ms);
+  transition: 0ms font-size calc(0 * 250ms);
+}
+
+.element:hover .box--1 {
+  font-size: 3rem;
+  -webkit-transition: 250ms font-size calc(0 * 250ms + 250ms);
+  transition: 250ms font-size calc(0 * 250ms + 250ms);
+}
+
+.box--2 {
+  font-size: 0;
+  -webkit-transition: 0ms font-size calc(1 * 250ms);
+  transition: 0ms font-size calc(1 * 250ms);
+}
+
+.element:hover .box--2 {
+  font-size: 3rem;
+  -webkit-transition: 250ms font-size calc(1 * 250ms + 250ms);
+  transition: 250ms font-size calc(1 * 250ms + 250ms);
+}
+
+.box--3 {
+  font-size: 0;
+  -webkit-transition: 0ms font-size calc(2 * 250ms);
+  transition: 0ms font-size calc(2 * 250ms);
+}
+
+.element:hover .box--3 {
+  font-size: 3rem;
+  -webkit-transition: 250ms font-size calc(2 * 250ms + 250ms);
+  transition: 250ms font-size calc(2 * 250ms + 250ms);
+}
+
+.box--4 {
+  font-size: 0;
+  -webkit-transition: 0ms font-size calc(3 * 250ms);
+  transition: 0ms font-size calc(3 * 250ms);
+}
+
+.element:hover .box--4 {
+  font-size: 3rem;
+  -webkit-transition: 250ms font-size calc(3 * 250ms + 250ms);
+  transition: 250ms font-size calc(3 * 250ms + 250ms);
+}
+/*# sourceMappingURL=style.css.map */

@@ -1,0 +1,115 @@
+:root {
+    --col-accent: #3D9970;
+}
+
+*,*::after,*::before {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+}
+
+.form {
+
+    min-width: 400px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, .15);
+    border-radius: 20px;
+    padding: 5px;
+    overflow: hidden;
+    
+    display: flex;
+    flex-direction: column;
+
+    & * {
+        text-transform: uppercase;
+        font-family: 'Roboto', sans-serif;
+        font-size: .85rem;
+        letter-spacing: 1px;
+    }
+
+    &__item {
+        height: 50px;
+        display: flex;
+        margin-bottom: 10px;
+    }
+
+    &__item:last-child {
+        margin-bottom: 0;
+    }
+
+    &__input {
+        padding-left: 15px;
+        flex-grow: 1;
+        border: none;
+    }
+
+    &__input::placeholder {
+        opacity: .5;
+        transition: opacity 200ms ease-in;
+    }
+
+    &__input:focus::placeholder {
+        color: var(--col-accent);
+        opacity: 1;
+    }
+
+    &__item--name {
+        position: relative;
+    }
+
+    &__item--name::after {
+        content: '';
+        position: absolute;
+        left: 5px;
+        right: 5px;
+        bottom: -5px;
+        height: 1px;
+        background-color: rgba(0, 0, 0, .15);
+    }
+
+    &__button {
+        color: white;
+        background-color: var(--col-accent);
+        width: 100%;
+        border: none;
+        border-radius: 15px;
+    }
+
+    @media screen and (min-width: 700px) {
+
+        display: grid;
+        grid-template-columns: 1fr 3fr 1fr;
+        border-radius: 100vh;
+        max-width: 650px;
+
+        &__item {
+            margin-bottom: 0;
+        }
+
+        &__input--name {
+            width: 150px;
+        }
+
+        &__item--name::after {
+            left: unset;
+            top: unset;
+            bottom: unset;
+            right: 0px;
+            height: 100%;
+            width: .5px;
+            background-color: rgba(0, 0, 0, .15);
+        }
+
+        &__button {
+            border-radius: 100vh;
+        }
+
+    }
+
+}
