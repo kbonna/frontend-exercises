@@ -1,0 +1,42 @@
+*, *::before, *::after {
+  padding: 0;
+  margin: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.slider {
+  margin: auto;
+  width: 50%;
+  height: 600px;
+  border: 1px solid red;
+  position: relative;
+}
+
+.slider__list {
+  background-color: limegreen;
+  display: block;
+  list-style: none;
+  height: 100%;
+  position: relative;
+}
+
+.slider__item {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+.slider__img {
+  width: 100%;
+  height: 100%;
+  -o-object-fit: cover;
+     object-fit: cover;
+}
+/*# sourceMappingURL=style.css.map */
