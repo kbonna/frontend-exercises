@@ -12,7 +12,9 @@
     <div class="slider">
 
         <!-- previous image   -->
-        <button class="slider__button slider__button--prev">L</button>
+        <button class="slider__button slider__button--prev">
+            <img src="img/left.svg" alt="left arrow" class="slider__arrow">
+        </button>
         
         <!-- slider content -->
         <ul class="slider__list">
@@ -22,13 +24,15 @@
         </ul>
 
         <!-- next image -->
-        <button class="slider__button slider__button--next">R</button>
+        <button class="slider__button slider__button--next">
+            <img src="img/right.svg" alt="right arrow" class="slider__arrow">
+        </button>
 
         <!-- dotted navigation -->
         <div class="slider__dots">
-            <button class="slider__dot">1</button>
-            <button class="slider__dot">2</button>
-            <button class="slider__dot">3</button>
+            <button class="slider__dot slider__dot--current"></button>
+            <button class="slider__dot"></button>
+            <button class="slider__dot"></button>
         </div>
 
     </div>

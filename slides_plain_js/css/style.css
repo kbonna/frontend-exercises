@@ -7,20 +7,21 @@
 
 body {
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.1);
+  display: -ms-grid;
+  display: grid;
 }
 
 .slider {
   margin: auto;
+  min-width: 500px;
   width: 50%;
-  height: 600px;
-  border: 1px solid red;
+  height: 500px;
   position: relative;
+  -webkit-box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+          box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 
 .slider__list {
-  background-color: limegreen;
-  display: block;
   list-style: none;
   height: 100%;
   position: relative;
@@ -30,7 +31,6 @@ body {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 100%;
 }
 
 .slider__img {
@@ -38,5 +38,43 @@ body {
   height: 100%;
   -o-object-fit: cover;
      object-fit: cover;
+}
+
+.slider__button {
+  height: 20px;
+  width: 20px;
+  border: none;
+  background-color: inherit;
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
+}
+
+.slider__button--next {
+  right: -35px;
+}
+
+.slider__button--prev {
+  left: -35px;
+}
+
+.slider__dots {
+  padding: 10px 0;
+  text-align: center;
+}
+
+.slider__dot {
+  height: 20px;
+  width: 20px;
+  background-color: rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 100vh;
+  margin: 0 10px;
+}
+
+.slider__dot--current {
+  background-color: rgba(0, 0, 0, 0.4);
 }
 /*# sourceMappingURL=style.css.map */

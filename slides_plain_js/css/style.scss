@@ -6,20 +6,18 @@
 
 body {
     height: 100vh;
-    background-color: rgba(0, 0, 0, .1);
+    display: grid;
 }
 
 .slider {
     margin: auto;
+    min-width: 500px;
     width: 50%;
-    height: 600px;
-
-    border: 1px solid red;
+    height: 500px;
     position: relative;
+    box-shadow: 0 0 15px rgba(0, 0, 0, .2);
 
     &__list {
-        background-color: limegreen;
-        display: block;
         list-style: none;        
         height: 100%;
         position: relative;
@@ -29,7 +27,6 @@ body {
         position: absolute;
         top: 0;
         bottom: 0;
-        width: 100%;
     }
 
     &__img {
@@ -38,6 +35,44 @@ body {
         object-fit: cover;
     }
 
+    // Buttons for changing slides
+    &__button {
+        height: 20px;
+        width: 20px;
+        border: none;
+        background-color: inherit;
+        cursor: pointer;
 
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    &__button--next {
+        right: -35px;
+    }
+
+    &__button--prev {
+        left: -35px;
+    }
+
+    // Dotted navigation
+    &__dots {
+        padding: 10px 0; // Spacing after slides
+        text-align: center;
+    }
+
+    &__dot {
+        height: 20px;
+        width: 20px;
+        background-color: rgba(0, 0, 0, .1);
+        border: none;
+        border-radius: 100vh;
+        margin: 0 10px; // Space between dots
+    }
+
+    &__dot--current {
+        background-color: rgba(0, 0, 0, .4);
+    }
 
 }
