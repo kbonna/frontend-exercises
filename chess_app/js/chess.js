@@ -9,6 +9,22 @@ Convention regarding board representation:
     6: king
 */
 
+Array.prototype.containsSubarray = function(subArray) {
+    for (let idx = 0; idx < this.length; idx++) {
+        let match = true;
+        for (let idy = 0; idy < subArray.length; idy++) {
+            if (this[idx][idy] !== subArray[idy]) {
+                match = false;
+                break;
+            }
+        }
+        if (match) {
+            return true;
+        }
+    }
+    return false;
+}
+
 class Game {
 
     constructor() {
@@ -87,10 +103,6 @@ class Game {
         this.drawBoard(boardWithMoves);
     }
 
-    getValidMoves(i, j) {
-        //pass
-    }
-
     /*****************
      * Check methods *
      *****************/
@@ -123,6 +135,13 @@ class Game {
         return false;
     }
 
+    isAlly(piece, i, j) {
+        if (piece * this.board[i][j] > 0) {
+            return true;
+        }
+        return false;        
+    }
+
     isEmptyOrEnemy(piece, i, j) {
         if (this.isEmpty(i,j) || this.isEnemy(piece, i, j)) {
             return true;
@@ -137,34 +156,129 @@ class Game {
         return false;
     }
 
+    /**
+     * Checks if position is occupied by the enemy piece of certain type. 
+     * 
+     * @param {number} piece            Piece type.
+     * @param {number} i                Row number.
+     * @param {number} j                Column number
+     * @param {number} enemyPieceType   Enemy piece type.
+     */
+    isEnemyType(piece, i, j, enemyPieceType) {
+        if (this.isEnemy(piece, i, j) && this.isPieceType(i, j, enemyPieceType)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if piece on position (i, j) is attacked by any piece of the enemy.
+     * 
+     * @param {number} piece 
+     * @param {number} i 
+     * @param {number} j 
+     * 
+     * @return {boolean} 
+     */
     isAttacked(piece, i, j) {
         let pieceSign = Math.sign(piece);
         let increments;
+        let directions;
 
         // Pawn threat
         increments = [1, -1];
         for (let idx = 0; idx < increments.length; idx++) {
+
             let increment = increments[idx];
+
             if (this.isInBoard(i+pieceSign, j+increment)) {
-                if (this.isEnemy(piece, i+pieceSign, j+increment) && 
-                    this.isPieceType(i+pieceSign, j+increment, 1)) {
-                        return true;
+                if (this.isEnemyType(piece, i+pieceSign, j+increment, 1)) {
+                    console.log('pawn attacking');
+                    return true;
                 }
             }
         }
 
         // Knight threat
-        increments = [[1, 2], [-1, 2], [1, -2], [-1, -2], [2, 1], [-2, 1], [2, -1], [-2, -1]];
+        increments = [[1, 2], [-1, 2], [1, -2], [-1, -2], 
+                      [2, 1], [-2, 1], [2, -1], [-2, -1]];
         for (let idx = 0; idx < increments.length; idx++) {
+
             let increment = increments[idx];
-            if (this.isInBoard(i+increment[0], j+increment[0])) {
-                if (this.isEnemy(piece, i+increment[0], j+increment[1]) &&
-                    this.isPieceType(i+increment[0], j+increment[1], 3)) {
-                        return true;
+            
+            if (this.isInBoard(i+increment[0], j+increment[1])) {
+                if (this.isEnemyType(piece, i+increment[0], j+increment[1], 3)) {
+                    console.log('knight attacking');
+                    return true;
                 }
             }
         }
         
+        // King threat
+        increments = [[1, 1], [-1, 1], [1, -1], [-1, -1], 
+                      [0, 1], [0, -1], [1, 0], [-1, 0]];
+        for (let idx = 0; idx < increments.length; idx++) {
+
+            let increment = increments[idx];
+            
+            if (this.isInBoard(i+increment[0], j+increment[1])){
+                if (this.isEnemyType(piece, i+increment[0], j+increment[1], 6)) {
+                    console.log('king attacking');
+                    return true;
+                }
+            }
+        }
+
+        // Long range (diagonal) threat
+        directions = [[1, 1], [-1, 1], [1, -1], [-1, -1]]
+        for (let idx = 0; idx < directions.length; idx++) {
+
+            let direction = directions[idx];
+            let steps = 1;
+            let move = [i + steps * direction[0], j + steps * direction[1]];
+
+            while (this.isInBoard(move[0], move[1])) {
+
+                if (this.isEnemyType(piece, move[0], move[1], 2)) {
+                    console.log('bishop attacking');
+                    return true;
+                } else if (this.isEnemyType(piece, move[0], move[1], 5)) {
+                    console.log('queen attacking');
+                    return true;
+                } else if (this.isAlly(piece, move[0], move[1])) {
+                    break;
+                }
+
+                steps += 1;
+                move = [i + steps * direction[0], j + steps * direction[1]];
+            }
+        }
+
+        // Long range (straight line) threat
+        directions = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+        for (let idx = 0; idx < directions.length; idx++) {
+
+            let direction = directions[idx];
+            let steps = 1;
+            let move = [i + steps * direction[0], j + steps * direction[1]];
+
+            while (this.isInBoard(move[0], move[1])) {
+
+                if (this.isEnemyType(piece, move[0], move[1], 4)) {
+                    console.log('rock attacking');
+                    return true;
+                } else if (this.isEnemyType(piece, move[0], move[1], 5)) {
+                    console.log('queen attacking');
+                    return true;
+                } else if (this.isAlly(piece, move[0], move[1])) {
+                    break;
+                }
+
+                steps += 1;
+                move = [i + steps * direction[0], j + steps * direction[1]];
+            }
+        }
+
         return false;
     }
 
@@ -176,10 +290,10 @@ class Game {
         
         let moves = [];
 
-        directions.forEach(increments => {
+        directions.forEach(direction => {
 
             let steps = 1;
-            let move = [i + steps * increments[0], j + steps * increments[1]];
+            let move = [i + steps * direction[0], j + steps * direction[1]];
 
             while (this.isInBoard(move[0], move[1])) {
                 
@@ -193,7 +307,7 @@ class Game {
                 }
 
                 steps += 1;
-                move = [i + steps * increments[0], j + steps * increments[1]];
+                move = [i + steps * direction[0], j + steps * direction[1]];
             }
         });
 
@@ -314,21 +428,75 @@ class Game {
         } else {
             throw "selected piece is not a knight but getKnightMoves was called";
         }
+
+        // Filter moves leading to check
+        moves = moves.filter(move => !this.isAttacked(piece, move[0], move[1])); 
+
         return moves;
     }
+
+    getMoves(i, j) {
+        let piece = this.board[i][j];
+        let moves;
     
+        switch (Math.abs(piece)) {
+
+            case 1:
+                moves = this.getPawnMoves(i, j);
+                break;
+            case 2:
+                moves = this.getBishopMoves(i, j);
+                break;
+            case 3:
+                moves = this.getKnightMoves(i, j);
+                break;
+            case 4:
+                moves = this.getRockMoves(i, j);
+                break;
+            case 5:
+                moves = this.getQueenMoves(i, j);
+                break;
+            case 6:
+                moves = this.getKingMoves(i, j);
+                break;
+
+        }
+        return moves;
+    }
+
+    /************************
+     * Controlling the game *
+     ************************/
+
+    move(moveFrom, moveTo) {
+        this.board[moveTo[0]][moveTo[1]] = this.board[moveFrom[0]][moveFrom[1]];
+        this.board[moveFrom[0]][moveFrom[1]] = 0;
+    }
+
+    moveSafe(moveFrom, moveTo) {
+
+        let validMoves = this.getMoves(moveFrom[0], moveFrom[1]);
+
+        if (validMoves.containsSubarray(moveTo)) {
+            this.move(moveFrom, moveTo)
+        } else {
+            console.log('invalid move...')
+        }
+
+    }
+
 }
+
+/*============================================================================*/
 
 if (typeof require !== 'undefined') {
     module.exports = {Game: Game};
 }
 
 const game = new Game;
-
-game.clearBoard();
-
-game.board[1][3] = 1;
-game.board[2][5] = -3; 
+// game.clearBoard();
+game.repr;
+game.moveSafe([0, 1], [2, 2]);
 game.repr;
 
-console.log(game.isAttacked(1, 1, 3));
+
