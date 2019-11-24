@@ -5,8 +5,8 @@ Convention regarding board representation:
     2: bishop
     3: knight
     4: rock
-    5: king
-    6: queen
+    5: queen
+    6: king
 */
 
 class Game {
@@ -31,20 +31,27 @@ class Game {
                 default:
                     this.board[index] = new Array(this.N).fill(0);
             }
+        });            
 
         // Array for marking possible en passant moves
-        this.enpassant = Array.apply(null, Array(this.N))
-        this.enpassant.forEach((row, index) => {
-            this.enpassant[index] = new Array(this.N).fill(0); 
-        });
+        this.enpassant = Array.from(Array(this.N), _ => Array(this.N).fill(0));
 
-        });            
+        // Determining if either side is checked
+        this.isChecked = {'-1': false, '1': false}
+
     }
 
     get repr() {
         return this.drawBoard();
     }
     
+    clearBoard() {
+        this.board = Array.from(Array(this.N), _ => Array(this.N).fill(0));
+    }
+
+    /*********************
+     * Visualize methods * 
+     *********************/
     drawBoard(boardOptional) {
 
         let boardReversed;
@@ -84,6 +91,17 @@ class Game {
         //pass
     }
 
+    /*****************
+     * Check methods *
+     *****************/
+
+    isPieceType(i, j, pieceType){
+        if (Math.abs(this.board[i][j]) === pieceType) {
+            return true;
+        }
+        return false;
+    }
+
     isInBoard(i, j) {
         if (i >= 0 && i <= this.N-1 && j >= 0 && j <= this.N-1) {
             return true;
@@ -91,28 +109,115 @@ class Game {
         return false;
     }
 
-    addIfEmptyOrEnemy(piece, i, j, moves) {
-        if (this.isInBoard(i,j)) {
-            if (this.board[i][j] === 0 || piece * this.board[i][j] < 0) {
-                moves.push([i, j]);
+    isEmpty(i, j) {
+         if (this.board[i][j] === 0) {
+            return true;
+        }
+        return false;
+    }
+
+    isEnemy(piece, i, j) {
+        if (piece * this.board[i][j] < 0) {
+            return true;
+        }
+        return false;
+    }
+
+    isEmptyOrEnemy(piece, i, j) {
+        if (this.isEmpty(i,j) || this.isEnemy(piece, i, j)) {
+            return true;
+        }
+        return false;
+    }
+
+    isEnPassant(piece, i, j) {
+        if (piece * this.enpassant[i][j] < 0) {
+            return true;
+        }
+        return false;
+    }
+
+    isAttacked(piece, i, j) {
+        let pieceSign = Math.sign(piece);
+        let increments;
+
+        // Pawn threat
+        increments = [1, -1];
+        for (let idx = 0; idx < increments.length; idx++) {
+            let increment = increments[idx];
+            if (this.isInBoard(i+pieceSign, j+increment)) {
+                if (this.isEnemy(piece, i+pieceSign, j+increment) && 
+                    this.isPieceType(i+pieceSign, j+increment, 1)) {
+                        return true;
+                }
             }
         }
+
+        // Knight threat
+        increments = [[1, 2], [-1, 2], [1, -2], [-1, -2], [2, 1], [-2, 1], [2, -1], [-2, -1]];
+        for (let idx = 0; idx < increments.length; idx++) {
+            let increment = increments[idx];
+            if (this.isInBoard(i+increment[0], j+increment[0])) {
+                if (this.isEnemy(piece, i+increment[0], j+increment[1]) &&
+                    this.isPieceType(i+increment[0], j+increment[1], 3)) {
+                        return true;
+                }
+            }
+        }
+        
+        return false;
     }
 
-    addIfEnemy(piece, i, j, moves) {
-        if (this.isInBoard(i,j)) {
-            if (piece * this.board[i][j] < 0) {
-                moves.push([i, j]);
+    /*********************
+     * Movement checking *
+     *********************/
+
+    searchLongMoves(piece, i, j, directions) {
+        
+        let moves = [];
+
+        directions.forEach(increments => {
+
+            let steps = 1;
+            let move = [i + steps * increments[0], j + steps * increments[1]];
+
+            while (this.isInBoard(move[0], move[1])) {
+                
+                if (this.isEmpty(move[0], move[1])) {
+                    moves.push(move);
+                } else if (this.isEnemy(piece, move[0], move[1])) {
+                    moves.push(move);
+                    break;
+                } else {
+                    break;
+                }
+
+                steps += 1;
+                move = [i + steps * increments[0], j + steps * increments[1]];
             }
-        }        
+        });
+
+        return moves;
     }
 
-    addIfEnPassant(piece, i, j, moves) {
-        if (this.isInBoard(i,j)) {
-            if (piece * this.enpassant[i][j] < 0) {
-                moves.push([i, j]);
+    searchShortMoves(piece, i, j, fields) {
+
+        let moves = [];
+
+        fields.forEach(increments => {
+
+            let move = [i + increments[0], j + increments[1]]
+
+            if (this.isInBoard(move[0], move[1])) {
+                if (this.isEmpty(move[0], move[1])) {
+                    moves.push(move);
+                } else if (this.isEnemy(piece, move[0], move[1])) {
+                    moves.push(move);
+                }
             }
-        }        
+        });
+
+        return moves;
     }
 
     getPawnMoves(i, j) {
@@ -121,35 +226,109 @@ class Game {
 
         if (piece === 1 || piece === -1) {
             // Basic move
-            this.addIfEmptyOrEnemy(piece, i+piece, j, moves);
+            if (this.isEmpty(i+piece, j)){
+                moves.push([i+piece, j]);
+            }
 
-            // Attack
-            this.addIfEnemy(piece, i+piece, j+1, moves);
-            this.addIfEnemy(piece, i+piece, j-1, moves);
-
+            console.log(i+piece)
             // Move from first line
-            if (piece === 1) {
-                if (i === 1) {
-                    this.addIfEmptyOrEnemy(piece, i+2*piece, j, moves);
-                }
-            } else {
-                if (i === this.N-2) {
-                    this.addIfEmptyOrEnemy(piece, i+2*piece, j, moves);
+            if (((piece === 1) && (i === 1)) || ((piece === -1) && (i === this.N-2))) {
+                if (this.isEmpty(i+2*piece, j)){
+                    moves.push([i+2*piece, j])
                 }
             }
 
-            // En passant
-            this.addIfEnPassant(piece, i+piece, j+1, moves);
-            this.addIfEnPassant(piece, i+piece, j-1, moves);
+            // Attack
+            [1, -1].forEach(increment => {
+                if (this.isInBoard(i+piece, j+increment)){
+                    if (this.isEnemy(piece, i+piece, j+increment)) {
+                        moves.push([i+piece, j+increment]);
+                    }
+                    // En passant attack
+                    if (this.isEnPassant(piece, i+piece, j+increment)) {
+                        moves.push([i+piece, j+increment]);
+                    }
+                }
+            });
         } else {
             throw "selected piece is not a pawn but getPawnMoves was called";
         }
         return moves;
     }
 
+    getKnightMoves(i, j) {
+        let piece = this.board[i][j];
+        let moves = [];
+
+        if (piece === 3 || piece === -3) {
+            moves.push(...this.searchShortMoves(piece, i, j, [[1, 2], [-1, 2], [1, -2], [-1, -2], [2, 1], [-2, 1], [2, -1], [-2, -1]]));
+        } else {
+            throw "selected piece is not a knight but getKnightMoves was called";
+        }
+        return moves;
+    }
+
+    getBishopMoves(i, j) {
+        let piece = this.board[i][j];
+        let moves = [];
+
+        if (piece === 2 || piece === -2) {
+            moves.push(...this.searchLongMoves(piece, i, j, [[-1, -1], [-1, 1], [1, -1], [1, 1]]));
+        } else {
+            throw "selected piece is not a bishop but getBishopMoves was called";
+        }
+        return moves;
+    }
+
+    getRockMoves(i, j) {
+        let piece = this.board[i][j];
+        let moves = [];
+
+        if (piece === 4 || piece === -4) {
+            moves.push(...this.searchLongMoves(piece, i, j, [[1, 0], [-1, 0], [0, 1], [0, -1]]));
+        } else {
+            throw "selected piece is not a rock but getRockMoves was called";
+        }
+        return moves;
+    }
+
+    getQueenMoves(i, j) {
+        let piece = this.board[i][j];
+        let moves = [];
+
+        if (piece === 5 || piece === -5) {
+            moves.push(...this.searchLongMoves(piece, i, j, [[1, 0], [-1, 0], [0, 1], [0, -1]]));
+            moves.push(...this.searchLongMoves(piece, i, j, [[-1, -1], [-1, 1], [1, -1], [1, 1]]));
+        } else {
+            throw "selected piece is not a queen but getQueenMoves was called";
+        }
+        return moves;
+    }
+
+    getKingMoves(i, j) {
+        let piece = this.board[i][j];
+        let moves = [];
+
+        if (piece === 6 || piece === -6) {
+            moves.push(...this.searchShortMoves(piece, i, j, [[1, 1], [-1, 1], [1, -1], [-1, -1], [0, 1], [0, -1], [1, 0], [-1, 0]]));
+        } else {
+            throw "selected piece is not a knight but getKnightMoves was called";
+        }
+        return moves;
+    }
+    
+}
+
+if (typeof require !== 'undefined') {
+    module.exports = {Game: Game};
 }
 
 const game = new Game;
 
+game.clearBoard();
+
+game.board[1][3] = 1;
+game.board[2][5] = -3; 
 game.repr;
-game.drawMoves(game.getPawnMoves(6, 0));
+
+console.log(game.isAttacked(1, 1, 3));

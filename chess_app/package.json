@@ -1,0 +1,21 @@
+{
+  "name": "chess_app",
+  "version": "1.0.0",
+  "description": "Chess aplication",
+  "main": "js/chess.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kbonna/frontend-exercises/tree/master/chess_app"
+  },
+  "keywords": [
+    "chess"
+  ],
+  "author": "Kamil Bonna",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^24.9.0"
+  }
+}
