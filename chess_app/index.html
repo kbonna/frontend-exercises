@@ -4,10 +4,116 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat|Orbitron&display=swap" rel="stylesheet">
     <title>Chess Application</title>
 </head>
 <body>
     
+    <div class="container">
+
+        <main class="board">
+                <!-- row-7 -->
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <!-- row-6 -->
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <!-- row-5 -->
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <!-- row-4 -->
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <!-- row-3 -->
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <!-- row-2 -->
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <!-- row-1 -->
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <!-- row-0 -->
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+                <div class="board__field board__field--black"></div>
+                <div class="board__field board__field--white"></div>
+        </main>
+
+        <aside class="menu">
+            <!-- game name -->
+            <h1 class="menu__title">Chess</h1>
+            <!-- timer for players -->
+            <div class="clock">
+                <div class="clock__display">
+                    <p class="clock__time clock__time--black">10.00</p>
+                    <p class="clock__time clock__time--white">10.00</p>                
+                </div>
+                <button class="btn clock__pause">Pause</button>
+                <select name="set clock" id="clock__setting" class="clock__setting">
+                    <option value="5">5 minutes</option>
+                    <option value="10">10 minutes</option>
+                    <option value="20">20 minutes</option>
+                    <option value="60">1 hour</option>
+                </select>
+            </div>
+            <!-- game options -->
+            <div class="options">
+                <button class="btn options__restart">Restart</button>
+                <button class="btn options__swap">Swap sides</button>
+            </div>
+        </aside>
+
+    </div>
+
 </body>
 <script src="js/chess.js"></script>
+<script src="js/chess-ui.js"></script>
 </html>

@@ -14,9 +14,10 @@
 - board and side panel
 - side panel functionality:
     - clock: counter for both players
+    - button: pause clock
     - select menu: set time
     - button: game restart
-    - button: swap sidesn
+    - button: swap sides
 
 App should block after finished game.
 

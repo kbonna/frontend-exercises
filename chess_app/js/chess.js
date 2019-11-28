@@ -35,7 +35,7 @@ class Game {
         this.board.forEach((row, index) => {
             switch(index) {
                 case 0:
-                    this.board[index] = [4, 3, 2, 6, 5, 2, 3, 4]
+                    this.board[index] = [4, 3, 2, 5, 6, 2, 3, 4]
                     break;
                 case 1:
                     this.board[index] = new Array(this.N).fill(1);
@@ -487,16 +487,6 @@ class Game {
 
 }
 
-/*============================================================================*/
-
 if (typeof require !== 'undefined') {
     module.exports = {Game: Game};
 }
-
-const game = new Game;
-// game.clearBoard();
-game.repr;
-game.moveSafe([0, 1], [2, 2]);
-game.repr;
-
-
