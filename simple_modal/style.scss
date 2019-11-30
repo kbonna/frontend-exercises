@@ -1,0 +1,78 @@
+:root {
+    --font-ss: 'Montserrat', sans-serif;
+    --font-se: 'Lora', serif;
+    --col-accent: #257d44;
+}
+
+*,*::before,*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+@mixin accented($font-size) {
+    background-color: var(--col-accent);
+    font-family: var(--font-ss);
+    color: white;
+    font-size: $font-size;   
+}
+
+.modal {
+    // display: none;
+    color: #222;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    font-family: var(--font-se);
+    background-color: rgba(0, 0, 0, .3);
+
+    &__content {
+        background-color: white;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+
+        display: grid;
+        grid-template-areas: 
+            "header exit"
+            "main main"
+            "footer footer";
+        grid-template-columns: 4fr 1fr;
+    }
+
+    &__content * {
+        padding: 1rem 3rem;
+    }
+
+    &__header {
+        grid-area: header;
+        @include accented(1.5rem);
+    }
+
+    &__exit {
+        grid-area: exit;
+        @include accented(2.5rem);
+        border: none;
+        line-height: 1.5rem;
+    }
+
+    &__exit:hover {
+        color: black;
+        cursor: pointer;
+    }
+
+    &__main {
+        grid-area: main;
+    }
+
+    &__footer {
+        grid-area: footer;
+        @include accented(1rem);
+        text-align: center;
+    }
+
+
+}
