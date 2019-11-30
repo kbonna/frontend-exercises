@@ -7,6 +7,13 @@ Convention regarding board representation:
     4: rock
     5: queen
     6: king
+
+
+Todo next: 
+    - check mate detection
+    - en passant
+    - castling
+    - promotion
 */
 
 Array.prototype.containsSubarray = function(subArray) {
@@ -49,11 +56,14 @@ class Game {
             }
         });            
 
+        this.whoseTurn = 1;
+
         // Array for marking possible en passant moves
         this.enpassant = Array.from(Array(this.N), _ => Array(this.N).fill(0));
 
         // Determining if either side is checked
-        this.isChecked = {'-1': false, '1': false}
+        this.kingPosition = {'-1': [7, 4], '1': [0, 4]};
+        this.kingChecked = {'-1': false, '1': false};
 
     }
 
@@ -245,7 +255,8 @@ class Game {
                 } else if (this.isEnemyType(piece, move[0], move[1], 5)) {
                     console.log('queen attacking');
                     return true;
-                } else if (this.isAlly(piece, move[0], move[1])) {
+                } else if (this.isAlly(piece, move[0], move[1]) || 
+                           this.isEnemy(piece, move[0], move[1])) {
                     break;
                 }
 
@@ -270,7 +281,8 @@ class Game {
                 } else if (this.isEnemyType(piece, move[0], move[1], 5)) {
                     console.log('queen attacking');
                     return true;
-                } else if (this.isAlly(piece, move[0], move[1])) {
+                } else if (this.isAlly(piece, move[0], move[1]) ||
+                           this.isEnemy(piece, move[0], move[1])) {
                     break;
                 }
 
@@ -280,6 +292,34 @@ class Game {
         }
 
         return false;
+    }
+
+    isChecked(side) {
+        return this.isAttacked(side * 6, 
+            this.kingPosition[side][0], this.kingPosition[side][1]);
+    }
+
+    isEscapingCheck(moveFrom, moveTo) {
+        let pieceFrom = this.board[moveFrom[0]][moveFrom[1]];
+        let pieceTo = this.board[moveTo[0]][moveTo[1]];
+        let returnValue;
+
+        // Fake move
+        this.board[moveTo[0]][moveTo[1]] = pieceFrom;
+        this.board[moveFrom[0]][moveFrom[1]] = 0;
+
+        if (this.isChecked(Math.sign(pieceFrom))) {
+            returnValue = false;
+        } else {
+            returnValue = true;
+        }
+
+        // Undo move
+        this.board[moveFrom[0]][moveFrom[1]] = pieceFrom;
+        this.board[moveTo[0]][moveTo[1]] = pieceTo;
+
+        console.log(returnValue);
+        return returnValue;
     }
 
     /*********************
@@ -344,7 +384,6 @@ class Game {
                 moves.push([i+piece, j]);
             }
 
-            console.log(i+piece)
             // Move from first line
             if (((piece === 1) && (i === 1)) || ((piece === -1) && (i === this.N-2))) {
                 if (this.isEmpty(i+2*piece, j)){
@@ -439,6 +478,10 @@ class Game {
         let piece = this.board[i][j];
         let moves;
     
+        if (this.whoseTurn !== Math.sign(piece)) {
+            return [];
+        }
+
         switch (Math.abs(piece)) {
 
             case 1:
@@ -461,6 +504,18 @@ class Game {
                 break;
 
         }
+
+        if (this.kingChecked[Math.sign(piece)]) {
+            moves = moves.filter(move => this.isEscapingCheck([i, j], move));
+
+            console.log(moves);
+
+            if (moves.length === 0) {
+                console.log('Game over!')
+            }
+        }
+
+
         return moves;
     }
 
@@ -469,8 +524,20 @@ class Game {
      ************************/
 
     move(moveFrom, moveTo) {
-        this.board[moveTo[0]][moveTo[1]] = this.board[moveFrom[0]][moveFrom[1]];
+
+        let piece = this.board[moveFrom[0]][moveFrom[1]];
+
+        this.board[moveTo[0]][moveTo[1]] = piece;
         this.board[moveFrom[0]][moveFrom[1]] = 0;
+
+        this.whoseTurn *= -1;
+        
+        // Handle check checking
+        if (Math.abs(piece) === 6) {
+            this.kingPosition[Math.sign(piece)] = moveTo;
+        }
+        this.kingChecked[this.whoseTurn] = this.isChecked(this.whoseTurn);
+
     }
 
     moveSafe(moveFrom, moveTo) {
@@ -478,9 +545,9 @@ class Game {
         let validMoves = this.getMoves(moveFrom[0], moveFrom[1]);
 
         if (validMoves.containsSubarray(moveTo)) {
-            this.move(moveFrom, moveTo)
+            this.move(moveFrom, moveTo);
         } else {
-            console.log('invalid move...')
+            console.log('invalid move...');
         }
 
     }

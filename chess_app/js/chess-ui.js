@@ -95,11 +95,15 @@ board.forEach((row, i) => {
             if (!highlight) {
                 movesAllowed = game.getMoves(i, j);
 
-                highlightMoves(movesAllowed);
-                draw();
+                if (movesAllowed.length !== 0) {
 
-                moveFrom = [i, j];
-                highlight = true;
+                    highlightMoves(movesAllowed);
+                    moveFrom = [i, j];
+
+                    draw();
+                    highlight = true;
+                }
+
             } else {
                 if (movesAllowed.containsSubarray([i, j])) {
                     game.move(moveFrom, [i, j]);
