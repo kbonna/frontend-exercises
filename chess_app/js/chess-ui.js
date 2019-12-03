@@ -108,8 +108,8 @@ board.forEach((row, i) => {
                 if (movesAllowed.containsSubarray([i, j])) {
                     game.move(moveFrom, [i, j]);
                     draw();
-                } else {
-                }
+                } 
+
                 cancelHighlight();
                 highlight = false;
             }

@@ -10,7 +10,6 @@ Convention regarding board representation:
 
 
 Todo next: 
-    - check mate detection
     - en passant
     - castling
     - promotion
@@ -299,7 +298,13 @@ class Game {
             this.kingPosition[side][0], this.kingPosition[side][1]);
     }
 
-    isEscapingCheck(moveFrom, moveTo) {
+    /**
+     * Checks if after making a move king is or becomes attacked.
+     * 
+     * @param {Array} moveFrom 
+     * @param {Array} moveTo 
+     */
+    isCheckedAfterMove(moveFrom, moveTo) {
         let pieceFrom = this.board[moveFrom[0]][moveFrom[1]];
         let pieceTo = this.board[moveTo[0]][moveTo[1]];
         let returnValue;
@@ -307,24 +312,55 @@ class Game {
         // Fake move
         this.board[moveTo[0]][moveTo[1]] = pieceFrom;
         this.board[moveFrom[0]][moveFrom[1]] = 0;
-
-        if (this.isChecked(Math.sign(pieceFrom))) {
-            returnValue = false;
-        } else {
-            returnValue = true;
+        if (Math.abs(pieceFrom) === 6) {
+            this.kingPosition[Math.sign(pieceFrom)] = moveTo;
         }
 
-        // Undo move
+        if (this.isChecked(Math.sign(pieceFrom))) {
+            returnValue = true;
+        } else {
+            returnValue = false;
+        }
+
+        // Undo fake move
         this.board[moveFrom[0]][moveFrom[1]] = pieceFrom;
         this.board[moveTo[0]][moveTo[1]] = pieceTo;
+        if (Math.abs(pieceFrom) === 6) {
+            this.kingPosition[Math.sign(pieceFrom)] = moveFrom;
+        }
 
-        console.log(returnValue);
         return returnValue;
+    }
+
+    isCheckMate(side) {
+        let moves;
+        let piecesPositions = this.getPiecesPositions(side);
+
+        for (let idx = 0; idx < piecesPositions.length; idx++) {
+            moves = this.getMoves(piecesPositions[idx][0], piecesPositions[idx][1]);
+            if (moves.length !== 0) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /*********************
      * Movement checking *
      *********************/
+
+    getPiecesPositions(side) {
+        let positions = [];
+        this.board.forEach((row, i) => {
+            row.forEach((piece, j) => {
+                if (Math.sign(piece) === side){
+                    positions.push([i, j]);
+                }
+            });
+        });
+        return positions;
+    }
 
     searchLongMoves(piece, i, j, directions) {
         
@@ -468,9 +504,6 @@ class Game {
             throw "selected piece is not a knight but getKnightMoves was called";
         }
 
-        // Filter moves leading to check
-        moves = moves.filter(move => !this.isAttacked(piece, move[0], move[1])); 
-
         return moves;
     }
 
@@ -505,16 +538,8 @@ class Game {
 
         }
 
-        if (this.kingChecked[Math.sign(piece)]) {
-            moves = moves.filter(move => this.isEscapingCheck([i, j], move));
-
-            console.log(moves);
-
-            if (moves.length === 0) {
-                console.log('Game over!')
-            }
-        }
-
+        // Exclude moves leading to check or not escaping check
+        moves = moves.filter(move => !this.isCheckedAfterMove([i, j], move))
 
         return moves;
     }
@@ -532,11 +557,16 @@ class Game {
 
         this.whoseTurn *= -1;
         
-        // Handle check checking
+        // Update king variables
         if (Math.abs(piece) === 6) {
             this.kingPosition[Math.sign(piece)] = moveTo;
         }
         this.kingChecked[this.whoseTurn] = this.isChecked(this.whoseTurn);
+        
+        // End-of-game detection
+        if (this.kingChecked[this.whoseTurn]) {
+
+        }
 
     }
 
