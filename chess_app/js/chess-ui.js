@@ -1,11 +1,16 @@
-const game = new Game;
+let game = new Game;
 game.repr;
 
 /*********************
  * Grab DOM elements *
  *********************/ 
+const pauseButton = document.querySelector('#pause');
+const restartButton = document.querySelector('#restart');
+const swapButton = document.querySelector('#swap');
 const fieldList = document.querySelectorAll('.board__field');
 const board = new Array(8);
+let reversed = false;
+
 for (let idx = 0; idx < board.length; idx++) {
     board[idx] = new Array(8);
 }
@@ -87,10 +92,15 @@ draw();
 let highlight = false;
 let moveFrom;
 let movesAllowed;
+let piece;
 
-board.forEach((row, i) => {
+board.forEach((row, ii) => {
     row.forEach((field, j) => {
-        field.addEventListener('click', (e) => {
+        field.addEventListener('click', e => {
+
+            // Interpreting clicks for upside down board (change first coordinate)
+            let i = ii;
+            if (reversed) {i = 7 - ii;}
 
             if (!highlight) {
                 movesAllowed = game.getMoves(i, j);
@@ -102,10 +112,17 @@ board.forEach((row, i) => {
 
                     draw();
                     highlight = true;
+                    piece = game.board[i][j];
                 }
 
             } else {
                 if (movesAllowed.containsSubarray([i, j])) {
+
+                    // Open promotion dialog if needed 
+                    if ((Math.abs(piece) === 1) & (i === 0 | i === 7)) {
+                        console.log('promotion dialog open...')
+                    }
+
                     game.move(moveFrom, [i, j]);
                     draw();
                 } 
@@ -116,3 +133,15 @@ board.forEach((row, i) => {
         });
     });
 });
+
+restartButton.addEventListener('click', e => {
+    cancelHighlight();
+    game = new Game;
+    draw();
+});
+
+swapButton.addEventListener('click', e => {
+    board.reverse();
+    reversed = !reversed;
+    draw();
+})

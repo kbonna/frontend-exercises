@@ -8,11 +8,12 @@ Convention regarding board representation:
     5: queen
     6: king
 
-
 Todo next: 
-    - en passant
-    - castling
-    - promotion
+    - ui dialog for promotion
+    - clock
+    - write a lot o GOOD test
+    - refactoring:
+        - no separate [i, j] => field object instead 
 */
 
 Array.prototype.containsSubarray = function(subArray) {
@@ -38,6 +39,51 @@ class Game {
         this.N = 8;
 
         this.board = Array.apply(null, Array(this.N));
+        this.populateBoard();
+
+        this.whoseTurn = 1;
+
+        /**
+         * Stores information about possible castling for each side. Castling is 
+         * permitted if (1) both king and selected rock did not move during the 
+         * game. Additional conditions are checked during actual move by 
+         * getCastleMoves method. Note that first array element corresponds to 
+         * long castle (rock on column 0), and second one to short castle (rock
+         * on column 7). 
+         */
+        this.canCastle = {'-1': [true, true], '1': [true, true]}
+
+        /**
+         * Stores information about possible en passant move. It is cleared 
+         * right after each move. It can be either empty array if en passant
+         * is not possible or contain one element denoting coordinates of 
+         * possible en passant move (where attacing pawn lands after move)
+         */
+        this.enpassant = [];
+
+        /**  
+         * Determines what piece is pawn promoted to for both sides. It is 
+         * supposed to be dynamically changed upon arrival of each pawn to the 
+         * last line (selection from UI)
+         */
+        this.promotion = {'-1': -5, '1': 5};
+
+        /**
+         * Store information about king. First object kingPosition tracks 
+         * current board position of both kings which is helpful for determining
+         * check and check mate states. Second object kingChecked determines if 
+         * either white or black king is currently in the checked state. 
+         */
+        this.kingPosition = {'-1': [7, 4], '1': [0, 4]};
+        this.kingChecked = {'-1': false, '1': false};
+
+    }
+
+    get repr() {
+        return this.drawBoard();
+    }
+    
+    populateBoard() {
         this.board.forEach((row, index) => {
             switch(index) {
                 case 0:
@@ -53,23 +99,9 @@ class Game {
                 default:
                     this.board[index] = new Array(this.N).fill(0);
             }
-        });            
-
-        this.whoseTurn = 1;
-
-        // Array for marking possible en passant moves
-        this.enpassant = Array.from(Array(this.N), _ => Array(this.N).fill(0));
-
-        // Determining if either side is checked
-        this.kingPosition = {'-1': [7, 4], '1': [0, 4]};
-        this.kingChecked = {'-1': false, '1': false};
-
+        });         
     }
 
-    get repr() {
-        return this.drawBoard();
-    }
-    
     clearBoard() {
         this.board = Array.from(Array(this.N), _ => Array(this.N).fill(0));
     }
@@ -153,13 +185,6 @@ class Game {
 
     isEmptyOrEnemy(piece, i, j) {
         if (this.isEmpty(i,j) || this.isEnemy(piece, i, j)) {
-            return true;
-        }
-        return false;
-    }
-
-    isEnPassant(piece, i, j) {
-        if (piece * this.enpassant[i][j] < 0) {
             return true;
         }
         return false;
@@ -410,6 +435,46 @@ class Game {
         return moves;
     }
 
+    /**
+     * Automatically check castle possibility and return array of possible king 
+     * moves related to castling.
+     * 
+     * @param {number} side 
+     */
+    getCastleMoves(side) {
+        let moves = [];
+        let castleLine = 0;
+
+        if (side === -1) {
+            castleLine = 7;
+        }
+
+        if (this.canCastle[side][0]) {
+            // Long castle
+            if (this.board[castleLine][1] === 0 &
+                this.board[castleLine][2] === 0 & 
+                this.board[castleLine][3] === 0) {
+                if (!this.isAttacked(side, castleLine, 2) &
+                    !this.isAttacked(side, castleLine, 3) &
+                    !this.isAttacked(side, castleLine, 4)) {
+                        moves.push([castleLine, 2]);
+                    }
+            }
+        } else if (this.canCastle[side][1]) {
+            // Short castle
+            if (this.board[castleLine][5] === 0 &
+                this.board[castleLine][6] === 0) {
+                if (!this.isAttacked(side, castleLine, 4) &
+                    !this.isAttacked(side, castleLine, 5)) {
+                        moves.push([castleLine, 6]);
+                    }
+            }
+
+        }
+
+        return moves;
+    }
+
     getPawnMoves(i, j) {
         let piece = this.board[i][j];
         let moves = [];
@@ -434,7 +499,7 @@ class Game {
                         moves.push([i+piece, j+increment]);
                     }
                     // En passant attack
-                    if (this.isEnPassant(piece, i+piece, j+increment)) {
+                    if (this.enpassant.containsSubarray([i+piece, j+increment])) {
                         moves.push([i+piece, j+increment]);
                     }
                 }
@@ -500,6 +565,7 @@ class Game {
 
         if (piece === 6 || piece === -6) {
             moves.push(...this.searchShortMoves(piece, i, j, [[1, 1], [-1, 1], [1, -1], [-1, -1], [0, 1], [0, -1], [1, 0], [-1, 0]]));
+            moves.push(...this.getCastleMoves(Math.sign(piece)));
         } else {
             throw "selected piece is not a knight but getKnightMoves was called";
         }
@@ -543,7 +609,6 @@ class Game {
 
         return moves;
     }
-
     /************************
      * Controlling the game *
      ************************/
@@ -555,19 +620,95 @@ class Game {
         this.board[moveTo[0]][moveTo[1]] = piece;
         this.board[moveFrom[0]][moveFrom[1]] = 0;
 
-        this.whoseTurn *= -1;
+        /**
+         * Handle castling:
+         *  (1) if castle was performed move also the rock
+         *  (2) if king was moved deny both castling
+         *  (3) if rock was moved deny specific castling
+         */ 
+        if (Math.abs(piece) === 6) {
+            if (Math.abs(moveTo[1] - moveFrom[1]) === 2) {
+                let castleLine = this.kingPosition[Math.sign(piece)][0];
+                let rockInitColumn;
+                let rockEndColumn;
+
+                // Right castle and left castle
+                if (moveTo[1] > moveFrom[1]) { 
+                    rockInitColumn = 7;
+                    rockEndColumn = 5; 
+                } else { 
+                    rockInitColumn = 0;
+                    rockEndColumn = 3;
+                }
+
+                this.board[castleLine][rockInitColumn] = 0;
+                this.board[castleLine][rockEndColumn] = Math.sign(piece) * 4;
+                this.canCastle[Math.sign(piece)] = [false, false];
+            }
+        }
+        if (this.canCastle[Math.sign(piece)].some(e => e)) {
+            if (Math.abs(piece) === 6) {
+                this.canCastle[Math.sign(piece)] = [false, false];
+            } else if ([moveFrom].containsSubarray([0, 0])) {
+                this.canCastle[1][0] = false;
+            } else if ([moveFrom].containsSubarray([0, 7])) {
+                this.canCastle[1][1] = false;
+            } else if ([moveFrom].containsSubarray([7, 0])) {
+                this.canCastle[-1][0] = false;
+            } else if ([moveFrom].containsSubarray([7, 7])) {
+                this.canCastle[-1][1] = false;
+            }
+        }
         
+        /**
+         * Handle en passant:
+         *  (1) if en passant kill was performed remove killed pawn
+         *  (2) if pawn was moved from the first line update enpassant array
+         */
+        if (this.enpassant.length !== 0){
+            if ((Math.abs(piece) === 1) & this.enpassant.containsSubarray(moveTo)) {
+                this.board[moveTo[0] - piece][moveTo[1]] = 0;
+            }
+            this.enpassant = [];
+        }
+        if (Math.abs(piece) === 1) {
+            if (Math.abs(moveTo[0] - moveFrom[0]) === 2){
+                this.enpassant.push([moveFrom[0]+piece, moveFrom[1]])
+            }
+        }
+
+        /**
+         * Handle promotion:
+         *  (1) if pawn reach last line it transforms to piece defined in 
+         *      coresponding promotion object
+         */
+        if ((Math.abs(piece) === 1) & ((moveTo[0] === 0) | (moveTo[0] === 7))) {
+            this.board[moveTo[0]][moveTo[1]] = this.promotion[Math.sign(piece)]
+        }
+
         // Update king variables
         if (Math.abs(piece) === 6) {
             this.kingPosition[Math.sign(piece)] = moveTo;
         }
+
+        //=== procedures for the other side ====================================
+        this.whoseTurn *= -1;
+        //======================================================================
+    
+        // Check and check-mate detection
         this.kingChecked[this.whoseTurn] = this.isChecked(this.whoseTurn);
-        
-        // End-of-game detection
         if (this.kingChecked[this.whoseTurn]) {
-
+            if (this.isCheckMate(this.whoseTurn)) {
+                let endGameMsg; 
+                    if (this.whoseTurn === -1) {
+                        endGameMsg = 'Check mate! White won!';
+                    } else {
+                        endGameMsg = 'Check mate! Black won!';
+                    }
+                window.alert(endGameMsg);
+            }
         }
-
+    
     }
 
     moveSafe(moveFrom, moveTo) {
