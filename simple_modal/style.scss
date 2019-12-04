@@ -1,7 +1,9 @@
 :root {
     --font-ss: 'Montserrat', sans-serif;
     --font-se: 'Lora', serif;
-    --col-accent: #257d44;
+    --col-accent: #aa7d44;
+    --col-black: #222;
+    --padding-modal: 1rem 2rem;
 }
 
 *,*::before,*::after {
@@ -17,9 +19,22 @@
     font-size: $font-size;   
 }
 
+.button {
+    @include accented(1rem);
+    border: none;
+    border-radius: 100vh;
+    padding: .5rem 2rem;
+    margin: 1rem;
+    cursor: pointer;
+}
+
+.button:hover {
+    color: var(--col-black);
+}
+
 .modal {
-    // display: none;
-    color: #222;
+    display: none;
+    color: var(--col-black);
     position: fixed;
     top: 0;
     right: 0;
@@ -34,45 +49,43 @@
         top: 50%;
         left: 50%;
         transform: translateX(-50%) translateY(-50%);
-
+        
+        width: 90%;
+        max-width: 500px;
         display: grid;
-        grid-template-areas: 
-            "header exit"
-            "main main"
-            "footer footer";
-        grid-template-columns: 4fr 1fr;
-    }
-
-    &__content * {
-        padding: 1rem 3rem;
+        align-items: center;
     }
 
     &__header {
-        grid-area: header;
         @include accented(1.5rem);
+        padding: var(--padding-modal);
+        position: relative;
     }
 
     &__exit {
-        grid-area: exit;
         @include accented(2.5rem);
         border: none;
-        line-height: 1.5rem;
+        cursor: pointer;
+        background-color: initial;
+        // Position relative to modal header
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
     }
 
     &__exit:hover {
-        color: black;
-        cursor: pointer;
+        color: var(--col-black);
     }
 
     &__main {
-        grid-area: main;
+        padding: var(--padding-modal);
     }
 
     &__footer {
-        grid-area: footer;
         @include accented(1rem);
+        padding: var(--padding-modal);
         text-align: center;
     }
-
 
 }

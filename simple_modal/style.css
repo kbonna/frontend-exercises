@@ -1,7 +1,9 @@
 :root {
   --font-ss: 'Montserrat', sans-serif;
   --font-se: 'Lora', serif;
-  --col-accent: #257d44;
+  --col-accent: #aa7d44;
+  --col-black: #222;
+  --padding-modal: 1rem 2rem;
 }
 
 *, *::before, *::after {
@@ -11,8 +13,25 @@
           box-sizing: border-box;
 }
 
+.button {
+  background-color: var(--col-accent);
+  font-family: var(--font-ss);
+  color: white;
+  font-size: 1rem;
+  border: none;
+  border-radius: 100vh;
+  padding: .5rem 2rem;
+  margin: 1rem;
+  cursor: pointer;
+}
+
+.button:hover {
+  color: var(--col-black);
+}
+
 .modal {
-  color: #222;
+  display: none;
+  color: var(--col-black);
   position: fixed;
   top: 0;
   right: 0;
@@ -29,60 +48,53 @@
   left: 50%;
   -webkit-transform: translateX(-50%) translateY(-50%);
           transform: translateX(-50%) translateY(-50%);
+  width: 90%;
+  max-width: 500px;
   display: -ms-grid;
   display: grid;
-      grid-template-areas: "header exit" "main main" "footer footer";
-  -ms-grid-columns: 4fr 1fr;
-      grid-template-columns: 4fr 1fr;
-}
-
-.modal__content * {
-  padding: 1rem 3rem;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
 .modal__header {
-  -ms-grid-row: 1;
-  -ms-grid-column: 1;
-  grid-area: header;
   background-color: var(--col-accent);
   font-family: var(--font-ss);
   color: white;
   font-size: 1.5rem;
+  padding: var(--padding-modal);
+  position: relative;
 }
 
 .modal__exit {
-  -ms-grid-row: 1;
-  -ms-grid-column: 2;
-  grid-area: exit;
   background-color: var(--col-accent);
   font-family: var(--font-ss);
   color: white;
   font-size: 2.5rem;
   border: none;
-  line-height: 1.5rem;
+  cursor: pointer;
+  background-color: initial;
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+          transform: translateY(-50%);
 }
 
 .modal__exit:hover {
-  color: black;
-  cursor: pointer;
+  color: var(--col-black);
 }
 
 .modal__main {
-  -ms-grid-row: 2;
-  -ms-grid-column: 1;
-  -ms-grid-column-span: 2;
-  grid-area: main;
+  padding: var(--padding-modal);
 }
 
 .modal__footer {
-  -ms-grid-row: 3;
-  -ms-grid-column: 1;
-  -ms-grid-column-span: 2;
-  grid-area: footer;
   background-color: var(--col-accent);
   font-family: var(--font-ss);
   color: white;
   font-size: 1rem;
+  padding: var(--padding-modal);
   text-align: center;
 }
 /*# sourceMappingURL=style.css.map */
