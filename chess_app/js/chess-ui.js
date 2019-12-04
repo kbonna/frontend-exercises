@@ -8,6 +8,8 @@ const pauseButton = document.querySelector('#pause');
 const restartButton = document.querySelector('#restart');
 const swapButton = document.querySelector('#swap');
 const fieldList = document.querySelectorAll('.board__field');
+const promotionModal = document.querySelector('.modal-promotion');
+const promotionPieces = document.querySelectorAll('.modal-promotion__piece');
 const board = new Array(8);
 let reversed = false;
 
@@ -84,55 +86,45 @@ function cancelHighlight() {
     });
 }
 
+function showPromotionModal() {
+    promotionModal.style.display = 'grid';
+}
+
+function hidePromotionModal() {
+    promotionModal.style.display = 'none';
+}
+
+function performPromotion() {
+
+    if (piece < 0) {
+        promotionPieces[0].src = 'img/bishop-black.svg';
+        promotionPieces[1].src = 'img/knight-black.svg';
+        promotionPieces[2].src = 'img/rock-black.svg';
+        promotionPieces[3].src = 'img/queen-black.svg';
+    } else {
+        promotionPieces[0].src = 'img/bishop-white.svg';
+        promotionPieces[1].src = 'img/knight-white.svg';
+        promotionPieces[2].src = 'img/rock-white.svg';
+        promotionPieces[3].src = 'img/queen-white.svg';
+    }
+
+    showPromotionModal();
+
+    // Block the game until promotion piece is chosen
+    game.blockGame = true;
+}
+
+
 draw();
 
 /*******************
  * Event listeners *
  *******************/
 let highlight = false;
-let moveFrom;
 let movesAllowed;
+let moveFrom;
+let moveTo;
 let piece;
-
-board.forEach((row, ii) => {
-    row.forEach((field, j) => {
-        field.addEventListener('click', e => {
-
-            // Interpreting clicks for upside down board (change first coordinate)
-            let i = ii;
-            if (reversed) {i = 7 - ii;}
-
-            if (!highlight) {
-                movesAllowed = game.getMoves(i, j);
-
-                if (movesAllowed.length !== 0) {
-
-                    highlightMoves(movesAllowed);
-                    moveFrom = [i, j];
-
-                    draw();
-                    highlight = true;
-                    piece = game.board[i][j];
-                }
-
-            } else {
-                if (movesAllowed.containsSubarray([i, j])) {
-
-                    // Open promotion dialog if needed 
-                    if ((Math.abs(piece) === 1) & (i === 0 | i === 7)) {
-                        console.log('promotion dialog open...')
-                    }
-
-                    game.move(moveFrom, [i, j]);
-                    draw();
-                } 
-
-                cancelHighlight();
-                highlight = false;
-            }
-        });
-    });
-});
 
 restartButton.addEventListener('click', e => {
     cancelHighlight();
@@ -145,3 +137,73 @@ swapButton.addEventListener('click', e => {
     reversed = !reversed;
     draw();
 })
+
+promotionPieces.forEach(p => {
+    p.addEventListener('click', e => {
+
+        // Change promotion choice for promoting side 
+        switch (e.target.id) {
+            case 'promo-bishop':
+                game.promotion[Math.sign(piece)] = Math.sign(piece) * 2;
+                break;
+            case 'promo-knight':
+                game.promotion[Math.sign(piece)] = Math.sign(piece) * 3;
+                break;
+            case 'promo-rock':
+                game.promotion[Math.sign(piece)] = Math.sign(piece) * 4;
+                break;
+            case 'promo-queen':
+                game.promotion[Math.sign(piece)] = Math.sign(piece) * 5;
+                break;
+        }
+
+        game.blockGame = false;
+        hidePromotionModal();
+        
+        // Proceed with the move
+        game.move(moveFrom, moveTo);
+        draw();
+
+    });
+});
+
+board.forEach((row, ii) => {
+    row.forEach((field, j) => {
+        field.addEventListener('click', e => {
+
+            // Interpreting clicks for upside down board (change first coordinate)
+            let i = ii;
+            if (reversed) {i = 7 - ii;}
+
+            // Show possible moves for piece
+            if (!highlight) {
+
+                moveFrom = [i, j];
+                piece = game.board[i][j];
+                movesAllowed = game.getMoves(i, j);
+
+                if (movesAllowed.length !== 0) {
+                    highlightMoves(movesAllowed);
+                    draw();
+                    highlight = true;
+                }
+
+            // Perform move if possible
+            } else {
+
+                moveTo = [i, j];
+
+                if (movesAllowed.containsSubarray(moveTo)) {
+                    // Open promotion dialog if needed 
+                    if ((Math.abs(piece) === 1) & (moveTo[0] === 0 | moveTo[0] === 7)) {
+                        performPromotion();
+                    }
+                    game.move(moveFrom, moveTo);
+                    draw();
+                } 
+                cancelHighlight();
+                highlight = false;
+            }
+        });
+    });
+});

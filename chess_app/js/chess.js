@@ -9,8 +9,7 @@ Convention regarding board representation:
     6: king
 
 Todo next: 
-    - ui dialog for promotion
-    - clock
+    - add clock
     - write a lot o GOOD test
     - refactoring:
         - no separate [i, j] => field object instead 
@@ -76,6 +75,15 @@ class Game {
          */
         this.kingPosition = {'-1': [7, 4], '1': [0, 4]};
         this.kingChecked = {'-1': false, '1': false};
+
+        /**
+         * If true:
+         *  (1) move() method will terminate right after calling
+         *  (2) getMoves() method will always return empty array
+         * This state variable is used to block the game during promotion 
+         * decision made by player.
+         */
+        this.blockGame = false;
 
     }
 
@@ -449,8 +457,8 @@ class Game {
             castleLine = 7;
         }
 
+        // Check long castle
         if (this.canCastle[side][0]) {
-            // Long castle
             if (this.board[castleLine][1] === 0 &
                 this.board[castleLine][2] === 0 & 
                 this.board[castleLine][3] === 0) {
@@ -460,8 +468,10 @@ class Game {
                         moves.push([castleLine, 2]);
                     }
             }
-        } else if (this.canCastle[side][1]) {
-            // Short castle
+        } 
+
+        // Check short castle
+        if (this.canCastle[side][1]) {
             if (this.board[castleLine][5] === 0 &
                 this.board[castleLine][6] === 0) {
                 if (!this.isAttacked(side, castleLine, 4) &
@@ -469,7 +479,6 @@ class Game {
                         moves.push([castleLine, 6]);
                     }
             }
-
         }
 
         return moves;
@@ -487,7 +496,7 @@ class Game {
 
             // Move from first line
             if (((piece === 1) && (i === 1)) || ((piece === -1) && (i === this.N-2))) {
-                if (this.isEmpty(i+2*piece, j)){
+                if (this.isEmpty(i+piece, j) & this.isEmpty(i+2*piece, j)){
                     moves.push([i+2*piece, j])
                 }
             }
@@ -574,6 +583,9 @@ class Game {
     }
 
     getMoves(i, j) {
+
+        if (this.blockGame) { return [] }
+
         let piece = this.board[i][j];
         let moves;
     
@@ -615,6 +627,8 @@ class Game {
 
     move(moveFrom, moveTo) {
 
+        if (this.blockGame) {return}
+
         let piece = this.board[moveFrom[0]][moveFrom[1]];
 
         this.board[moveTo[0]][moveTo[1]] = piece;
@@ -625,7 +639,7 @@ class Game {
          *  (1) if castle was performed move also the rock
          *  (2) if king was moved deny both castling
          *  (3) if rock was moved deny specific castling
-         */ 
+         */
         if (Math.abs(piece) === 6) {
             if (Math.abs(moveTo[1] - moveFrom[1]) === 2) {
                 let castleLine = this.kingPosition[Math.sign(piece)][0];

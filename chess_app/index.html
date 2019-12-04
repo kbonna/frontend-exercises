@@ -6,6 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css?family=Montserrat|Orbitron&display=swap" rel="stylesheet">
+    <script src="js/chess.js" defer></script>
+    <script src="js/chess-ui.js" defer></script>
     <title>Chess Application</title>
 </head>
 <body>
@@ -113,7 +115,18 @@
 
     </div>
 
+    <!-- only visible when choosing promoted piece -->
+    <div class="modal-promotion">
+        <div class="modal-promotion__content">
+            <h1 class="modal-promotion__title">Choose promoted piece</h1>
+            <div class="modal-promotion__pieces">
+                <img src="img/bishop-white.svg" alt="" class="modal-promotion__piece" id="promo-bishop">
+                <img src="img/knight-white.svg" alt="" class="modal-promotion__piece" id="promo-knight">
+                <img src="img/rock-white.svg" alt="" class="modal-promotion__piece" id="promo-rock">
+                <img src="img/queen-white.svg" alt="" class="modal-promotion__piece" id="promo-queen">
+            </div>
+        </div>
+    </div>
+
 </body>
-<script src="js/chess.js"></script>
-<script src="js/chess-ui.js"></script>
 </html>
