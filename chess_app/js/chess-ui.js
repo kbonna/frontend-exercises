@@ -1,16 +1,106 @@
+/********* 
+ * Timer *
+ *********/
+
+class Timer {
+
+    constructor() {
+        this.tElapsedWhite;
+        this.tElapsedBlack;
+        this.initTime;
+        this.maxTime;
+        this.paused = true;
+        this.resetTimer();
+    }
+
+    resetTimer() {
+        this.tElapsedWhite = 0;
+        this.tElapsedBlack = 0;
+        this.initTime = Date.now();
+        this.maxTime = 600;
+        this.paused = true;
+    }
+
+    togglePause() {
+        if (this.paused) {
+            this.initTime = Date.now();
+            this.paused = false;
+            this.tickTimer();
+        } else {
+            this.cacheTime();
+            this.paused = true;
+        }
+    }
+
+    cacheTime() {
+        if (game.whoseTurn === 1) {
+            this.tElapsedWhite += Date.now() - this.initTime;
+        } else {
+            this.tElapsedBlack += Date.now() - this.initTime;
+        }    
+        this.initTime = Date.now();
+    }
+
+    /**
+     * Converts number of seconds into printable timer format (mm.ss). Assumes 
+     * integer input.
+     * 
+     * @param {number} t 
+     */
+    static getPrintableTime(t) {
+        let minutes = Math.floor(t / 60);
+        let seconds = t - minutes * 60;
+        return `${minutes.toString().padStart(2, '0')}.${seconds.toString().padStart(2, '0')}`; 
+    }
+
+    tickTimer() {
+
+        let tElapsed;
+        let tLeft;
+
+        if (!this.paused) {
+            if (game.whoseTurn === 1) {
+                tElapsed = (Date.now() - this.initTime + this.tElapsedWhite) / 1000;
+                tLeft = Math.round(this.maxTime - tElapsed);
+                clockWhite.innerHTML = Timer.getPrintableTime(tLeft);
+                clockBlack.innerHTML = Timer.getPrintableTime(Math.round(this.maxTime - this.tElapsedBlack / 1000));
+            } else {
+                tElapsed = (Date.now() - this.initTime + this.tElapsedBlack) / 1000;
+                tLeft = Math.round(this.maxTime - tElapsed);
+                clockBlack.innerHTML = Timer.getPrintableTime(tLeft);
+                clockWhite.innerHTML = Timer.getPrintableTime(Math.round(this.maxTime - this.tElapsedWhite / 1000));
+            }
+            if (tElapsed > this.maxTime) {
+                EndGame.endGameTimeExceeded(game, timer);
+            } else {
+                setTimeout(() => {this.tickTimer()}, 500);
+            }
+        }
+    }
+}
+
+/**********************
+ * Initialize objects *
+ **********************/
+
 let game = new Game;
-game.repr;
+let timer = new Timer;
 
 /*********************
  * Grab DOM elements *
  *********************/ 
-const pauseButton = document.querySelector('#pause');
+const clockWhite = document.querySelector('.clock__time--white');
+const clockBlack = document.querySelector('.clock__time--black');
+
+const toggleButton = document.querySelector('#toggle');
 const restartButton = document.querySelector('#restart');
 const swapButton = document.querySelector('#swap');
+
 const fieldList = document.querySelectorAll('.board__field');
 const promotionModal = document.querySelector('.modal-promotion');
 const promotionPieces = document.querySelectorAll('.modal-promotion__piece');
 const board = new Array(8);
+
 let reversed = false;
 
 for (let idx = 0; idx < board.length; idx++) {
@@ -21,6 +111,10 @@ for (let idx = 0; idx < board.length; idx++) {
 fieldList.forEach((field, idx) => {
     board[7 - Math.floor(idx / 8)][idx % 8] = field;
 });
+
+/************************
+ * UI display functions *
+ ************************/
 
 function draw() {
     for (let i = 0; i < 8; i++) {
@@ -114,21 +208,41 @@ function performPromotion() {
     game.blockGame = true;
 }
 
-
 draw();
 
 /*******************
  * Event listeners *
  *******************/
+let toggleEnabled = true; 
 let highlight = false;
 let movesAllowed;
 let moveFrom;
 let moveTo;
 let piece;
 
+toggleButton.addEventListener('click', e => {
+    if (toggleEnabled) {
+        timer.togglePause();
+        game.toggleBlockGame();
+
+        if (toggleButton.innerHTML === 'Start') {
+            toggleButton.innerHTML = 'Pause';
+        } else {
+            toggleButton.innerHTML = 'Start';
+        }
+    }
+});
+
 restartButton.addEventListener('click', e => {
+    clockWhite.innerHTML = '--.--';
+    clockBlack.innerHTML = '--.--';
+    toggleButton.innerHTML = 'Start';
+    
+    game.resetGame();
+    timer.resetTimer();
+    
+    toggleEnabled = true;
     cancelHighlight();
-    game = new Game;
     draw();
 });
 
@@ -198,6 +312,7 @@ board.forEach((row, ii) => {
                     if ((Math.abs(piece) === 1) & (moveTo[0] === 0 | moveTo[0] === 7)) {
                         performPromotion();
                     }
+                    timer.cacheTime();
                     game.move(moveFrom, moveTo);
                     draw();
                 } 
@@ -207,3 +322,4 @@ board.forEach((row, ii) => {
         });
     });
 });
+

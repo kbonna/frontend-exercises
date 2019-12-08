@@ -9,8 +9,17 @@ Convention regarding board representation:
     6: king
 
 Todo next: 
-    - add clock
-    - write a lot o GOOD test
+    Project desc:
+    - update Readme.md
+
+    Frontend:
+    - rethink button design
+    - style time duration list
+    - add timer thin divider
+    - add Chess subtitle styled 
+
+    Backend:
+    - write a lot o GOOD test / document functions
     - refactoring:
         - no separate [i, j] => field object instead 
 */
@@ -36,11 +45,13 @@ class Game {
     constructor() {
 
         this.N = 8;
-
         this.board = Array.apply(null, Array(this.N));
-        this.populateBoard();
-
-        this.whoseTurn = 1;
+        
+        /**
+         * Stores information about next turn. It can be either 1 if next move 
+         * belongs to white, and -1 if next move belongs to black.
+         */
+        this.whoseTurn;
 
         /**
          * Stores information about possible castling for each side. Castling is 
@@ -50,7 +61,7 @@ class Game {
          * long castle (rock on column 0), and second one to short castle (rock
          * on column 7). 
          */
-        this.canCastle = {'-1': [true, true], '1': [true, true]}
+        this.canCastle;
 
         /**
          * Stores information about possible en passant move. It is cleared 
@@ -58,14 +69,14 @@ class Game {
          * is not possible or contain one element denoting coordinates of 
          * possible en passant move (where attacing pawn lands after move)
          */
-        this.enpassant = [];
+        this.enpassant;
 
         /**  
          * Determines what piece is pawn promoted to for both sides. It is 
          * supposed to be dynamically changed upon arrival of each pawn to the 
          * last line (selection from UI)
          */
-        this.promotion = {'-1': -5, '1': 5};
+        this.promotion;
 
         /**
          * Store information about king. First object kingPosition tracks 
@@ -73,8 +84,8 @@ class Game {
          * check and check mate states. Second object kingChecked determines if 
          * either white or black king is currently in the checked state. 
          */
-        this.kingPosition = {'-1': [7, 4], '1': [0, 4]};
-        this.kingChecked = {'-1': false, '1': false};
+        this.kingPosition;
+        this.kingChecked;
 
         /**
          * If true:
@@ -83,7 +94,10 @@ class Game {
          * This state variable is used to block the game during promotion 
          * decision made by player.
          */
-        this.blockGame = false;
+        this.blockGame;
+
+        // Initialize all fields
+        this.resetGame();
 
     }
 
@@ -110,13 +124,33 @@ class Game {
         });         
     }
 
+    /**
+     * Reset game object as if it would be initialized again. Resets pieces 
+     * positions and all state variables.
+     */
+    resetGame() {
+        this.populateBoard();
+        this.whoseTurn = 1;
+        this.canCastle = {'-1': [true, true], '1': [true, true]};
+        this.enpassant = [];
+        this.promotion = {'-1': -5, '1': 5};
+        this.kingPosition = {'-1': [7, 4], '1': [0, 4]};
+        this.kingChecked = {'-1': false, '1': false};
+        this.blockGame = true;
+    }
+
     clearBoard() {
         this.board = Array.from(Array(this.N), _ => Array(this.N).fill(0));
+    }
+
+    toggleBlockGame() {
+        this.blockGame = !this.blockGame;
     }
 
     /*********************
      * Visualize methods * 
      *********************/
+
     drawBoard(boardOptional) {
 
         let boardReversed;
@@ -713,13 +747,7 @@ class Game {
         this.kingChecked[this.whoseTurn] = this.isChecked(this.whoseTurn);
         if (this.kingChecked[this.whoseTurn]) {
             if (this.isCheckMate(this.whoseTurn)) {
-                let endGameMsg; 
-                    if (this.whoseTurn === -1) {
-                        endGameMsg = 'Check mate! White won!';
-                    } else {
-                        endGameMsg = 'Check mate! Black won!';
-                    }
-                window.alert(endGameMsg);
+                EndGame.endGameCheckMate(this, timer);
             }
         }
     
@@ -735,6 +763,36 @@ class Game {
             console.log('invalid move...');
         }
 
+    }
+
+}
+
+class EndGame {
+
+    static endGameCheckMate(game, timer) {
+        let endGameMsg; 
+        if (game.whoseTurn === -1) {
+            endGameMsg = 'Check mate! White won!';
+        } else {
+            endGameMsg = 'Check mate! Black won!';
+        }
+    timer.togglePause();
+    game.toggleBlockGame(); 
+    toggleEnabled = false;
+    window.alert(endGameMsg);
+    }
+
+    static endGameTimeExceeded(game, timer) {
+        let endGameMsg; 
+        if (game.whoseTurn === -1) {
+            endGameMsg = 'Time over! White won!';
+        } else {
+            endGameMsg = 'Time over! Black won!';
+        }
+    timer.togglePause();
+    game.toggleBlockGame(); 
+    toggleEnabled = false;
+    window.alert(endGameMsg);
     }
 
 }
