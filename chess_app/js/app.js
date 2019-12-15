@@ -1,96 +1,41 @@
-/********* 
- * Timer *
- *********/
-
-class Timer {
-
-    constructor() {
-        this.tElapsedWhite;
-        this.tElapsedBlack;
-        this.initTime;
-        this.maxTime;
-        this.paused = true;
-        this.resetTimer();
-    }
-
-    resetTimer() {
-        this.tElapsedWhite = 0;
-        this.tElapsedBlack = 0;
-        this.initTime = Date.now();
-        this.maxTime = 600;
-        this.paused = true;
-    }
-
-    togglePause() {
-        if (this.paused) {
-            this.initTime = Date.now();
-            this.paused = false;
-            this.tickTimer();
-        } else {
-            this.cacheTime();
-            this.paused = true;
-        }
-    }
-
-    cacheTime() {
-        if (game.whoseTurn === 1) {
-            this.tElapsedWhite += Date.now() - this.initTime;
-        } else {
-            this.tElapsedBlack += Date.now() - this.initTime;
-        }    
-        this.initTime = Date.now();
-    }
-
-    /**
-     * Converts number of seconds into printable timer format (mm.ss). Assumes 
-     * integer input.
-     * 
-     * @param {number} t 
-     */
-    static getPrintableTime(t) {
-        let minutes = Math.floor(t / 60);
-        let seconds = t - minutes * 60;
-        return `${minutes.toString().padStart(2, '0')}.${seconds.toString().padStart(2, '0')}`; 
-    }
-
-    tickTimer() {
-
-        let tElapsed;
-        let tLeft;
-
-        if (!this.paused) {
-            if (game.whoseTurn === 1) {
-                tElapsed = (Date.now() - this.initTime + this.tElapsedWhite) / 1000;
-                tLeft = Math.round(this.maxTime - tElapsed);
-                clockWhite.innerHTML = Timer.getPrintableTime(tLeft);
-                clockBlack.innerHTML = Timer.getPrintableTime(Math.round(this.maxTime - this.tElapsedBlack / 1000));
-            } else {
-                tElapsed = (Date.now() - this.initTime + this.tElapsedBlack) / 1000;
-                tLeft = Math.round(this.maxTime - tElapsed);
-                clockBlack.innerHTML = Timer.getPrintableTime(tLeft);
-                clockWhite.innerHTML = Timer.getPrintableTime(Math.round(this.maxTime - this.tElapsedWhite / 1000));
-            }
-            if (tElapsed > this.maxTime) {
-                EndGame.endGameTimeExceeded(game, timer);
-            } else {
-                setTimeout(() => {this.tickTimer()}, 500);
+Array.prototype.containsSubarray = function(subArray) {
+    for (let idx = 0; idx < this.length; idx++) {
+        let match = true;
+        for (let idy = 0; idy < subArray.length; idy++) {
+            if (this[idx][idy] !== subArray[idy]) {
+                match = false;
+                break;
             }
         }
+        if (match) {
+            return true;
+        }
     }
+    return false;
 }
 
-/**********************
- * Initialize objects *
- **********************/
+/************
+ * End Game *
+ ************/
 
-let game = new Game;
-let timer = new Timer;
+function handleCheckMate(game, timer, ui) {
+    let endGameMsg; 
+        if (game.whoseTurn === -1) {
+            endGameMsg = 'Check mate! White won!';
+        } else {
+            endGameMsg = 'Check mate! Black won!';
+        }
+    timer.togglePause();
+    ui.toggleEnabled = false;
+    window.alert(endGameMsg);
+}
 
 /*********************
  * Grab DOM elements *
  *********************/ 
 const clockWhite = document.querySelector('.clock__time--white');
 const clockBlack = document.querySelector('.clock__time--black');
+const clockSetting = document.querySelector('#clock__setting')
 
 const toggleButton = document.querySelector('#toggle');
 const restartButton = document.querySelector('#restart');
@@ -190,7 +135,7 @@ function hidePromotionModal() {
 
 function performPromotion() {
 
-    if (piece < 0) {
+    if (ui.currentPiece < 0) {
         promotionPieces[0].src = 'img/bishop-black.svg';
         promotionPieces[1].src = 'img/knight-black.svg';
         promotionPieces[2].src = 'img/rock-black.svg';
@@ -208,20 +153,38 @@ function performPromotion() {
     game.blockGame = true;
 }
 
+const ui = {
+    toggleEnabled: true,
+    gameStarted: false,
+    highlight: false,
+    movesAllowed: [],
+    moveFrom: [],
+    moveTo: [],
+    currentPiece: null
+}
+
+/**********************
+ * Initialize objects *
+ **********************/
+
+let game = new Game;
+let timer = new Timer(game, ui, clockWhite, clockBlack);
+
 draw();
 
 /*******************
  * Event listeners *
  *******************/
-let toggleEnabled = true; 
-let highlight = false;
-let movesAllowed;
-let moveFrom;
-let moveTo;
-let piece;
 
 toggleButton.addEventListener('click', e => {
-    if (toggleEnabled) {
+
+    if (!ui.gameStarted) {
+        timer.maxTime = clockSetting[clockSetting.selectedIndex].value * 60;
+        ui.gameStarted = true;
+        clockSetting.disabled = true;
+    }
+
+    if (ui.toggleEnabled) {
         timer.togglePause();
         game.toggleBlockGame();
 
@@ -237,11 +200,13 @@ restartButton.addEventListener('click', e => {
     clockWhite.innerHTML = '--.--';
     clockBlack.innerHTML = '--.--';
     toggleButton.innerHTML = 'Start';
+    ui.gameStarted = false;
+    clockSetting.disabled = false;
     
     game.resetGame();
     timer.resetTimer();
     
-    toggleEnabled = true;
+    ui.toggleEnabled = true;
     cancelHighlight();
     draw();
 });
@@ -258,16 +223,16 @@ promotionPieces.forEach(p => {
         // Change promotion choice for promoting side 
         switch (e.target.id) {
             case 'promo-bishop':
-                game.promotion[Math.sign(piece)] = Math.sign(piece) * 2;
+                game.promotion[Math.sign(ui.currentPiece)] = Math.sign(ui.currentPiece) * 2;
                 break;
             case 'promo-knight':
-                game.promotion[Math.sign(piece)] = Math.sign(piece) * 3;
+                game.promotion[Math.sign(ui.currentPiece)] = Math.sign(ui.currentPiece) * 3;
                 break;
             case 'promo-rock':
-                game.promotion[Math.sign(piece)] = Math.sign(piece) * 4;
+                game.promotion[Math.sign(ui.currentPiece)] = Math.sign(ui.currentPiece) * 4;
                 break;
             case 'promo-queen':
-                game.promotion[Math.sign(piece)] = Math.sign(piece) * 5;
+                game.promotion[Math.sign(ui.currentPiece)] = Math.sign(ui.currentPiece) * 5;
                 break;
         }
 
@@ -275,7 +240,8 @@ promotionPieces.forEach(p => {
         hidePromotionModal();
         
         // Proceed with the move
-        game.move(moveFrom, moveTo);
+        game.move(ui.moveFrom, ui.moveTo);
+        if (game.checkMate) { handleCheckMate(game, timer, ui) };
         draw();
 
     });
@@ -290,36 +256,36 @@ board.forEach((row, ii) => {
             if (reversed) {i = 7 - ii;}
 
             // Show possible moves for piece
-            if (!highlight) {
+            if (!ui.highlight) {
 
-                moveFrom = [i, j];
-                piece = game.board[i][j];
-                movesAllowed = game.getMoves(i, j);
+                ui.moveFrom = [i, j];
+                ui.currentPiece = game.board[i][j];
+                ui.movesAllowed = game.getMoves(i, j);
 
-                if (movesAllowed.length !== 0) {
-                    highlightMoves(movesAllowed);
+                if (ui.movesAllowed.length !== 0) {
+                    highlightMoves(ui.movesAllowed);
                     draw();
-                    highlight = true;
+                    ui.highlight = true;
                 }
 
             // Perform move if possible
             } else {
 
-                moveTo = [i, j];
+                ui.moveTo = [i, j];
 
-                if (movesAllowed.containsSubarray(moveTo)) {
+                if (ui.movesAllowed.containsSubarray(ui.moveTo)) {
                     // Open promotion dialog if needed 
-                    if ((Math.abs(piece) === 1) & (moveTo[0] === 0 | moveTo[0] === 7)) {
+                    if ((Math.abs(ui.currentPiece) === 1) & (ui.moveTo[0] === 0 | ui.moveTo[0] === 7)) {
                         performPromotion();
                     }
                     timer.cacheTime();
-                    game.move(moveFrom, moveTo);
+                    game.move(ui.moveFrom, ui.moveTo);
+                    if (game.checkMate) { handleCheckMate(game, timer, ui) };
                     draw();
                 } 
                 cancelHighlight();
-                highlight = false;
+                ui.highlight = false;
             }
         });
     });
 });
-

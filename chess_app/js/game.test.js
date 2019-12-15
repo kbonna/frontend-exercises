@@ -1,4 +1,3 @@
-const { Game } = require('./chess');
 
 const game = new Game();
 

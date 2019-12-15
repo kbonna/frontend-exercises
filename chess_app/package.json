@@ -2,9 +2,9 @@
   "name": "chess_app",
   "version": "1.0.0",
   "description": "Chess aplication",
-  "main": "js/chess.js",
+  "main": "js/app.js",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest "
   },
   "repository": {
     "type": "git",

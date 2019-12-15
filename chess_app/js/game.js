@@ -1,13 +1,4 @@
 /*
-Convention regarding board representation: 
-    0: empty field
-    1: pawn
-    2: bishop
-    3: knight
-    4: rock
-    5: queen
-    6: king
-
 Todo next: 
     Project desc:
     - update Readme.md
@@ -24,27 +15,23 @@ Todo next:
         - no separate [i, j] => field object instead 
 */
 
-Array.prototype.containsSubarray = function(subArray) {
-    for (let idx = 0; idx < this.length; idx++) {
-        let match = true;
-        for (let idy = 0; idy < subArray.length; idy++) {
-            if (this[idx][idy] !== subArray[idy]) {
-                match = false;
-                break;
-            }
-        }
-        if (match) {
-            return true;
-        }
-    }
-    return false;
-}
-
 class Game {
 
     constructor() {
 
         this.N = 8;
+
+        /**
+         * Stores entire information about pieces locations. By convention white
+         * pieces are positive numbers, black pieces are negative numbers and 
+         * zero denotes empty field. Absoulute value denotes piece type:
+         *  1: pawn
+         *  2: bishop
+         *  3: knight
+         *  4: rock
+         *  5: queen
+         *  6: king
+         */
         this.board = Array.apply(null, Array(this.N));
         
         /**
@@ -99,6 +86,10 @@ class Game {
         // Initialize all fields
         this.resetGame();
 
+    }
+
+    get checkMate() {
+        return this.isCheckMate(this.whoseTurn);
     }
 
     get repr() {
@@ -402,6 +393,10 @@ class Game {
     isCheckMate(side) {
         let moves;
         let piecesPositions = this.getPiecesPositions(side);
+
+        if (!this.isChecked(side)) {
+            return false;
+        }
 
         for (let idx = 0; idx < piecesPositions.length; idx++) {
             moves = this.getMoves(piecesPositions[idx][0], piecesPositions[idx][1]);
@@ -745,10 +740,10 @@ class Game {
     
         // Check and check-mate detection
         this.kingChecked[this.whoseTurn] = this.isChecked(this.whoseTurn);
-        if (this.kingChecked[this.whoseTurn]) {
-            if (this.isCheckMate(this.whoseTurn)) {
-                EndGame.endGameCheckMate(this, timer);
-            }
+
+        
+        if (this.isCheckMate(this.whoseTurn)) {
+            this.blockGame = true;
         }
     
     }
@@ -765,38 +760,4 @@ class Game {
 
     }
 
-}
-
-class EndGame {
-
-    static endGameCheckMate(game, timer) {
-        let endGameMsg; 
-        if (game.whoseTurn === -1) {
-            endGameMsg = 'Check mate! White won!';
-        } else {
-            endGameMsg = 'Check mate! Black won!';
-        }
-    timer.togglePause();
-    game.toggleBlockGame(); 
-    toggleEnabled = false;
-    window.alert(endGameMsg);
-    }
-
-    static endGameTimeExceeded(game, timer) {
-        let endGameMsg; 
-        if (game.whoseTurn === -1) {
-            endGameMsg = 'Time over! White won!';
-        } else {
-            endGameMsg = 'Time over! Black won!';
-        }
-    timer.togglePause();
-    game.toggleBlockGame(); 
-    toggleEnabled = false;
-    window.alert(endGameMsg);
-    }
-
-}
-
-if (typeof require !== 'undefined') {
-    module.exports = {Game: Game};
 }
