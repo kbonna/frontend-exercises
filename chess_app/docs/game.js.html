@@ -1,8 +1,36 @@
-/**
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: game.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: game.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
  * Checks if array contains specific subarray. Used to check if a field is one
  * of array elements.
  *
- * @param {Array<number>} subArray - Array of numbers
+ * @param {Array&lt;number>} subArray - Array of numbers
  *
  * @returns {boolean}
  */
@@ -11,10 +39,10 @@ Array.prototype.containsSubarray = function(subArray) {
         throw new TypeError(`${subArray} is not an array`);
     }
 
-    for (let idx = 0; idx < this.length; idx++) {
+    for (let idx = 0; idx &lt; this.length; idx++) {
         let match = true;
 
-        for (let idy = 0; idy < subArray.length; idy++) {
+        for (let idy = 0; idy &lt; subArray.length; idy++) {
             if (this[idx][idy] !== subArray[idy]) {
                 match = false;
                 break;
@@ -54,7 +82,7 @@ class Game {
          *  5: queen
          *  6: king
          *
-         * @type {Array<Array>}
+         * @type {Array&lt;Array>}
          */
         this.board = Array.apply(null, Array(this.N));
 
@@ -74,7 +102,7 @@ class Game {
          * long castle (rock on column 0), and second one to short castle (rock
          * on column 7).
          *
-         * @type {Object}
+         * @type {{'-1': Array, '1': Array}}
          */
         this.canCastle;
 
@@ -83,8 +111,6 @@ class Game {
          * right after each move. It can be either empty array if en passant
          * is not possible or contain one element denoting coordinates of
          * possible en passant move (where attacing pawn lands after move)
-         *
-         * @type {Array}
          */
         this.enpassant;
 
@@ -92,25 +118,16 @@ class Game {
          * Determines what piece is pawn promoted to for both sides. It is
          * supposed to be dynamically changed upon arrival of each pawn to the
          * last line (selection from UI)
-         *
-         * @type {Array}
          */
         this.promotion;
 
         /**
-         * Tracks current board position of both kings which is helpful for
-         * determining check and check mate states.
-         *
-         * @type {Object}
+         * Store information about king. First object kingPosition tracks
+         * current board position of both kings which is helpful for determining
+         * check and check mate states. Second object kingChecked determines if
+         * either white or black king is currently in the checked state.
          */
         this.kingPosition;
-
-        /**
-         * Determines if either white or black king is currently in the checked
-         * state.
-         *
-         * @type {Object}
-         */
         this.kingChecked;
 
         /**
@@ -119,10 +136,8 @@ class Game {
          *  (2) getMoves() method will always return empty array
          * This state variable is used to block the game during promotion
          * decision made by player.
-         *
-         * @type {boolean}
          */
-        this.isBlocked;
+        this.blockGame;
 
         // Initialize all fields
         this.resetGame();
@@ -136,24 +151,6 @@ class Game {
         return this.drawBoard();
     }
 
-    /**
-     * Resets game object as if it would be initialized again. Resets pieces
-     * positions and all state variables.
-     */
-    resetGame() {
-        this.populateBoard();
-        this.whoseTurn = 1;
-        this.canCastle = { '-1': [true, true], '1': [true, true] };
-        this.enpassant = [];
-        this.promotion = { '-1': -5, '1': 5 };
-        this.kingPosition = { '-1': [7, 4], '1': [0, 4] };
-        this.kingChecked = { '-1': false, '1': false };
-        this.isBlocked = true;
-    }
-
-    /**
-     * Resets board. Place all pieces on their initial positions.
-     */
     populateBoard() {
         this.board.forEach((row, index) => {
             switch (index) {
@@ -176,29 +173,32 @@ class Game {
     }
 
     /**
-     * Removes all pieces from the board.
+     * Reset game object as if it would be initialized again. Resets pieces
+     * positions and all state variables.
      */
+    resetGame() {
+        this.populateBoard();
+        this.whoseTurn = 1;
+        this.canCastle = { '-1': [true, true], '1': [true, true] };
+        this.enpassant = [];
+        this.promotion = { '-1': -5, '1': 5 };
+        this.kingPosition = { '-1': [7, 4], '1': [0, 4] };
+        this.kingChecked = { '-1': false, '1': false };
+        this.blockGame = true;
+    }
+
     clearBoard() {
         this.board = Array.from(Array(this.N), _ => Array(this.N).fill(0));
     }
 
-    /**
-     * Toggle between blocked and not blocked state.
-     */
     toggleBlockGame() {
-        this.isBlocked = !this.isBlocked;
+        this.blockGame = !this.blockGame;
     }
 
     /*********************
      * Visualize methods *
      *********************/
 
-    /**
-     * Print formatted representation of the chessboard to the console.
-     *
-     * @param {Array<Array>} [boardOptional] - Optional board to use instead of
-     *  the current chessboard.
-     */
     drawBoard(boardOptional) {
         let boardReversed;
         let boardString = '';
@@ -212,7 +212,7 @@ class Game {
         boardReversed.forEach((row, i) => {
             boardString += `:${this.N - i - 1}:  `;
             row.forEach(e => {
-                if (e < 0) {
+                if (e &lt; 0) {
                     boardString += `${e} `;
                 } else {
                     boardString += ` ${e} `;
@@ -228,15 +228,10 @@ class Game {
         console.log(boardString);
     }
 
-    /**
-     * Print formatted chessboard to the console and highlight specified moves.
-     *
-     * @param {Array<Array>} moves - Moves to highlight
-     */
     drawMoves(moves) {
         let boardWithMoves = this.board.slice();
         moves.forEach(move => {
-            boardWithMoves[move[0]][move[1]] = String.fromCharCode(2746);
+            boardWithMoves[move[0]][move[1]] = String.fromCharCode(2746); //4030
         });
         this.drawBoard(boardWithMoves);
     }
@@ -253,7 +248,7 @@ class Game {
     }
 
     isInBoard(i, j) {
-        if (i >= 0 && i <= this.N - 1 && j >= 0 && j <= this.N - 1) {
+        if (i >= 0 &amp;&amp; i &lt;= this.N - 1 &amp;&amp; j >= 0 &amp;&amp; j &lt;= this.N - 1) {
             return true;
         }
         return false;
@@ -267,7 +262,7 @@ class Game {
     }
 
     isEnemy(piece, i, j) {
-        if (piece * this.board[i][j] < 0) {
+        if (piece * this.board[i][j] &lt; 0) {
             return true;
         }
         return false;
@@ -297,7 +292,7 @@ class Game {
      */
     isEnemyType(piece, i, j, enemyPieceType) {
         if (
-            this.isEnemy(piece, i, j) &&
+            this.isEnemy(piece, i, j) &amp;&amp;
             this.isPieceType(i, j, enemyPieceType)
         ) {
             return true;
@@ -321,7 +316,7 @@ class Game {
 
         // Pawn threat
         increments = [1, -1];
-        for (let idx = 0; idx < increments.length; idx++) {
+        for (let idx = 0; idx &lt; increments.length; idx++) {
             let increment = increments[idx];
 
             if (this.isInBoard(i + pieceSign, j + increment)) {
@@ -343,7 +338,7 @@ class Game {
             [2, -1],
             [-2, -1]
         ];
-        for (let idx = 0; idx < increments.length; idx++) {
+        for (let idx = 0; idx &lt; increments.length; idx++) {
             let increment = increments[idx];
 
             if (this.isInBoard(i + increment[0], j + increment[1])) {
@@ -372,7 +367,7 @@ class Game {
             [1, 0],
             [-1, 0]
         ];
-        for (let idx = 0; idx < increments.length; idx++) {
+        for (let idx = 0; idx &lt; increments.length; idx++) {
             let increment = increments[idx];
 
             if (this.isInBoard(i + increment[0], j + increment[1])) {
@@ -397,7 +392,7 @@ class Game {
             [1, -1],
             [-1, -1]
         ];
-        for (let idx = 0; idx < directions.length; idx++) {
+        for (let idx = 0; idx &lt; directions.length; idx++) {
             let direction = directions[idx];
             let steps = 1;
             let move = [i + steps * direction[0], j + steps * direction[1]];
@@ -428,7 +423,7 @@ class Game {
             [0, 1],
             [0, -1]
         ];
-        for (let idx = 0; idx < directions.length; idx++) {
+        for (let idx = 0; idx &lt; directions.length; idx++) {
             let direction = directions[idx];
             let steps = 1;
             let move = [i + steps * direction[0], j + steps * direction[1]];
@@ -505,7 +500,7 @@ class Game {
             return false;
         }
 
-        for (let idx = 0; idx < piecesPositions.length; idx++) {
+        for (let idx = 0; idx &lt; piecesPositions.length; idx++) {
             moves = this.getMoves(
                 piecesPositions[idx][0],
                 piecesPositions[idx][1]
@@ -594,13 +589,13 @@ class Game {
         // Check long castle
         if (this.canCastle[side][0]) {
             if (
-                (this.board[castleLine][1] === 0) &
-                (this.board[castleLine][2] === 0) &
+                (this.board[castleLine][1] === 0) &amp;
+                (this.board[castleLine][2] === 0) &amp;
                 (this.board[castleLine][3] === 0)
             ) {
                 if (
-                    !this.isAttacked(side, castleLine, 2) &
-                    !this.isAttacked(side, castleLine, 3) &
+                    !this.isAttacked(side, castleLine, 2) &amp;
+                    !this.isAttacked(side, castleLine, 3) &amp;
                     !this.isAttacked(side, castleLine, 4)
                 ) {
                     moves.push([castleLine, 2]);
@@ -611,11 +606,11 @@ class Game {
         // Check short castle
         if (this.canCastle[side][1]) {
             if (
-                (this.board[castleLine][5] === 0) &
+                (this.board[castleLine][5] === 0) &amp;
                 (this.board[castleLine][6] === 0)
             ) {
                 if (
-                    !this.isAttacked(side, castleLine, 4) &
+                    !this.isAttacked(side, castleLine, 4) &amp;
                     !this.isAttacked(side, castleLine, 5)
                 ) {
                     moves.push([castleLine, 6]);
@@ -638,11 +633,11 @@ class Game {
 
             // Move from first line
             if (
-                (piece === 1 && i === 1) ||
-                (piece === -1 && i === this.N - 2)
+                (piece === 1 &amp;&amp; i === 1) ||
+                (piece === -1 &amp;&amp; i === this.N - 2)
             ) {
                 if (
-                    this.isEmpty(i + piece, j) & this.isEmpty(i + 2 * piece, j)
+                    this.isEmpty(i + piece, j) &amp; this.isEmpty(i + 2 * piece, j)
                 ) {
                     moves.push([i + 2 * piece, j]);
                 }
@@ -785,7 +780,7 @@ class Game {
     }
 
     getMoves(i, j) {
-        if (this.isBlocked) {
+        if (this.blockGame) {
             return [];
         }
 
@@ -827,7 +822,7 @@ class Game {
      ************************/
 
     move(moveFrom, moveTo) {
-        if (this.isBlocked) {
+        if (this.blockGame) {
             return;
         }
 
@@ -883,7 +878,7 @@ class Game {
          */
         if (this.enpassant.length !== 0) {
             if (
-                (Math.abs(piece) === 1) &
+                (Math.abs(piece) === 1) &amp;
                 this.enpassant.containsSubarray(moveTo)
             ) {
                 this.board[moveTo[0] - piece][moveTo[1]] = 0;
@@ -901,7 +896,7 @@ class Game {
          *  (1) if pawn reach last line it transforms to piece defined in
          *      coresponding promotion object
          */
-        if ((Math.abs(piece) === 1) & ((moveTo[0] === 0) | (moveTo[0] === 7))) {
+        if ((Math.abs(piece) === 1) &amp; ((moveTo[0] === 0) | (moveTo[0] === 7))) {
             this.board[moveTo[0]][moveTo[1]] = this.promotion[Math.sign(piece)];
         }
 
@@ -918,7 +913,7 @@ class Game {
         this.kingChecked[this.whoseTurn] = this.isChecked(this.whoseTurn);
 
         if (this.isCheckMate(this.whoseTurn)) {
-            this.isBlocked = true;
+            this.blockGame = true;
         }
     }
 
@@ -936,3 +931,26 @@ class Game {
 if (typeof module !== 'undefined') {
     module.exports = Game;
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Game.html">Game</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Mon Dec 16 2019 23:44:59 GMT+0100 (Central European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -2,9 +2,10 @@
   "name": "chess_app",
   "version": "1.0.0",
   "description": "Chess aplication",
-  "main": "js/app.js",
+  "main": "js/game.js",
   "scripts": {
-    "test": "jest "
+    "test": "jest",
+    "doc": "jsdoc -c jsdoc.json"
   },
   "repository": {
     "type": "git",
@@ -16,6 +17,7 @@
   "author": "Kamil Bonna",
   "license": "MIT",
   "devDependencies": {
-    "jest": "^24.9.0"
+    "jest": "^24.9.0",
+    "jsdoc": "^3.6.3"
   }
 }
