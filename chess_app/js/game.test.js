@@ -28,7 +28,7 @@ test('containsSubarray producing correct output', () => {
 
 test('resetting chessboard', () => {
     game.board[0] = [0, 0, 0, 0, 0, 0, 0, 0];
-    game.populateBoard();
+    game.setBoard();
     expect(game.board[0]).toEqual([4, 3, 2, 5, 6, 2, 3, 4]);
     expect(game.board[7]).toEqual([-4, -3, -2, -5, -6, -2, -3, -4]);
 });
@@ -78,3 +78,171 @@ test('toggling game blocked state', () => {
 //     game.board[4][6] = 1;
 //     expect(game.getPawnMoves(5, 7).sort()).toEqual([[4, 6], [4, 7]].sort());
 // });
+
+// isAttacked
+
+test('isAttacked validated for pawn', () => {
+    // white pawn
+    game.clearBoard();
+    game.setPiece(0, 0, 1);
+    game.setPiece(1, 1, -1);
+    expect(game.isAttacked(0, 0, 1)).toBe(true);
+
+    game.clearBoard();
+    game.setPiece(0, 0, 1);
+    game.setPiece(0, 1, -1);
+    expect(game.isAttacked(0, 0, 1)).toBe(false);
+
+    game.clearBoard();
+    game.setPiece(0, 0, 1);
+    game.setPiece(1, 1, 1);
+    expect(game.isAttacked(0, 0, 1)).toBe(false);
+
+    // black pawn
+    game.clearBoard();
+    game.setPiece(7, 7, -1);
+    game.setPiece(6, 6, 1);
+    expect(game.isAttacked(7, 7, -1)).toBe(true);
+
+    game.clearBoard();
+    game.setPiece(7, 7, -1);
+    game.setPiece(6, 7, 1);
+    expect(game.isAttacked(0, 0, 1)).toBe(false);
+
+    game.clearBoard();
+    game.setPiece(7, 7, -1);
+    game.setPiece(6, 6, -1);
+    expect(game.isAttacked(7, 7, -1)).toBe(false);
+});
+
+test('isAttacked validated for bishop', () => {
+    [1, -1].forEach(side => {
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(7, 7, -2 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(true);
+
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(7, 7, 2 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(false);
+
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(1, 1, side);
+        game.setPiece(7, 7, -2 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(false);
+    });
+});
+
+test('isAttacked validated for knight', () => {
+    [1, -1].forEach(side => {
+        // can knight really jump?
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(1, 1, side);
+        game.setPiece(0, 1, side);
+        game.setPiece(1, 0, side);
+        game.setPiece(1, 2, -3 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(true);
+
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(1, 1, side);
+        game.setPiece(0, 1, side);
+        game.setPiece(1, 0, side);
+        game.setPiece(2, 1, -3 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(true);
+
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(1, 2, 3 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(false);
+    });
+});
+
+test('isAttacked validated for rock', () => {
+    [1, -1].forEach(side => {
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(7, 0, -4 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(true);
+
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(1, 0, side);
+        game.setPiece(7, 0, -4 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(false);
+
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(0, 7, -4 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(true);
+
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(0, 1, side);
+        game.setPiece(0, 7, -4 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(false);
+
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(7, 0, 4 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(false);
+    });
+});
+
+test('isAttacked validated for queen', () => {
+    [1, -1].forEach(side => {
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(7, 0, -5 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(true);
+
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(1, 0, side);
+        game.setPiece(7, 0, -5 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(false);
+
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(7, 7, -5 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(true);
+
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(1, 1, side);
+        game.setPiece(7, 7, -5 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(false);
+
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(7, 0, 5 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(false);
+    });
+});
+
+test('isAttacked validated for king', () => {
+    [1, -1].forEach(side => {
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(1, 0, -6 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(true);
+
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(0, 1, -6 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(true);
+
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(1, 1, -6 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(true);
+
+        game.clearBoard();
+        game.setPiece(0, 0, side);
+        game.setPiece(1, 1, 6 * side);
+        expect(game.isAttacked(0, 0, side)).toBe(false);
+    });
+});

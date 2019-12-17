@@ -49,7 +49,7 @@ fieldList.forEach((field, idx) => {
 function draw() {
     for (let i = 0; i < 8; i++) {
         for (let j = 0; j < 8; j++) {
-            switch (game.board[i][j]) {
+            switch (game.getPiece(i, j)) {
                 case 0:
                     board[i][j].innerHTML = '';
                     break;
@@ -144,7 +144,7 @@ function performPromotion() {
     showPromotionModal();
 
     // Block the game until promotion piece is chosen
-    game.blockGame = true;
+    game.isBlocked = true;
 }
 
 const ui = {
@@ -232,7 +232,7 @@ promotionPieces.forEach(p => {
                 break;
         }
 
-        game.blockGame = false;
+        game.isBlocked = false;
         hidePromotionModal();
 
         // Proceed with the move
@@ -256,7 +256,7 @@ board.forEach((row, ii) => {
             // Show possible moves for piece
             if (!ui.highlight) {
                 ui.moveFrom = [i, j];
-                ui.currentPiece = game.board[i][j];
+                ui.currentPiece = game.getPiece(i, j);
                 ui.movesAllowed = game.getMoves(i, j);
 
                 if (ui.movesAllowed.length !== 0) {

@@ -93,7 +93,7 @@ class Game {
          * supposed to be dynamically changed upon arrival of each pawn to the
          * last line (selection from UI)
          *
-         * @type {Array}
+         * @type {Object}
          */
         this.promotion;
 
@@ -128,10 +128,16 @@ class Game {
         this.resetGame();
     }
 
+    /**
+     * @property {boolean} - Tells you if game is over
+     */
     get checkMate() {
         return this.isCheckMate(this.whoseTurn);
     }
 
+    /**
+     * @property {null} - Formatted chessboard representation as a string
+     */
     get repr() {
         return this.drawBoard();
     }
@@ -141,7 +147,7 @@ class Game {
      * positions and all state variables.
      */
     resetGame() {
-        this.populateBoard();
+        this.setBoard();
         this.whoseTurn = 1;
         this.canCastle = { '-1': [true, true], '1': [true, true] };
         this.enpassant = [];
@@ -154,7 +160,7 @@ class Game {
     /**
      * Resets board. Place all pieces on their initial positions.
      */
-    populateBoard() {
+    setBoard() {
         this.board.forEach((row, index) => {
             switch (index) {
                 case 0:
@@ -173,6 +179,17 @@ class Game {
                     this.board[index] = new Array(this.N).fill(0);
             }
         });
+    }
+
+    /**
+     * Places piece on a specific position.
+     *
+     * @param {number} i - Row number
+     * @param {number} j - Column number
+     * @param {number} piece - Piece to be placed
+     */
+    setPiece(i, j, piece) {
+        this.board[i][j] = piece;
     }
 
     /**
@@ -266,22 +283,15 @@ class Game {
         return false;
     }
 
-    isEnemy(piece, i, j) {
+    isEnemy(i, j, piece) {
         if (piece * this.board[i][j] < 0) {
             return true;
         }
         return false;
     }
 
-    isAlly(piece, i, j) {
+    isAlly(i, j, piece) {
         if (piece * this.board[i][j] > 0) {
-            return true;
-        }
-        return false;
-    }
-
-    isEmptyOrEnemy(piece, i, j) {
-        if (this.isEmpty(i, j) || this.isEnemy(piece, i, j)) {
             return true;
         }
         return false;
@@ -290,14 +300,14 @@ class Game {
     /**
      * Checks if position is occupied by the enemy piece of certain type.
      *
-     * @param {number} piece            Piece type.
-     * @param {number} i                Row number.
-     * @param {number} j                Column number
-     * @param {number} enemyPieceType   Enemy piece type.
+     * @param {number} i - Row number
+     * @param {number} j - Column number
+     * @param {number} piece - Piece type
+     * @param {number} enemyPieceType - Enemy piece type.
      */
-    isEnemyType(piece, i, j, enemyPieceType) {
+    isEnemyType(i, j, piece, enemyPieceType) {
         if (
-            this.isEnemy(piece, i, j) &&
+            this.isEnemy(i, j, piece) &&
             this.isPieceType(i, j, enemyPieceType)
         ) {
             return true;
@@ -305,35 +315,23 @@ class Game {
         return false;
     }
 
-    /**
-     * Checks if piece on position (i, j) is attacked by any piece of the enemy.
-     *
-     * @param {number} piece
-     * @param {number} i
-     * @param {number} j
-     *
-     * @return {boolean}
-     */
-    isAttacked(piece, i, j) {
+    isAttackedByPawn(i, j, piece) {
         let pieceSign = Math.sign(piece);
-        let increments;
-        let directions;
-
-        // Pawn threat
-        increments = [1, -1];
+        let increments = [1, -1];
         for (let idx = 0; idx < increments.length; idx++) {
             let increment = increments[idx];
 
             if (this.isInBoard(i + pieceSign, j + increment)) {
-                if (this.isEnemyType(piece, i + pieceSign, j + increment, 1)) {
-                    console.log('pawn attacking');
+                if (this.isEnemyType(i + pieceSign, j + increment, piece, 1)) {
                     return true;
                 }
             }
         }
+        return false;
+    }
 
-        // Knight threat
-        increments = [
+    isAttackedByKnight(i, j, piece) {
+        let increments = [
             [1, 2],
             [-1, 2],
             [1, -2],
@@ -349,20 +347,21 @@ class Game {
             if (this.isInBoard(i + increment[0], j + increment[1])) {
                 if (
                     this.isEnemyType(
-                        piece,
                         i + increment[0],
                         j + increment[1],
+                        piece,
                         3
                     )
                 ) {
-                    console.log('knight attacking');
                     return true;
                 }
             }
         }
+        return false;
+    }
 
-        // King threat
-        increments = [
+    isAttackedByKing(i, j, piece) {
+        let increments = [
             [1, 1],
             [-1, 1],
             [1, -1],
@@ -378,9 +377,9 @@ class Game {
             if (this.isInBoard(i + increment[0], j + increment[1])) {
                 if (
                     this.isEnemyType(
-                        piece,
                         i + increment[0],
                         j + increment[1],
+                        piece,
                         6
                     )
                 ) {
@@ -389,9 +388,11 @@ class Game {
                 }
             }
         }
+        return false;
+    }
 
-        // Long range (diagonal) threat
-        directions = [
+    isAttackedOnDiagonal(i, j, piece) {
+        let directions = [
             [1, 1],
             [-1, 1],
             [1, -1],
@@ -400,29 +401,30 @@ class Game {
         for (let idx = 0; idx < directions.length; idx++) {
             let direction = directions[idx];
             let steps = 1;
-            let move = [i + steps * direction[0], j + steps * direction[1]];
+            let it = i + steps * direction[0];
+            let jt = j + steps * direction[1];
 
-            while (this.isInBoard(move[0], move[1])) {
-                if (this.isEnemyType(piece, move[0], move[1], 2)) {
-                    console.log('bishop attacking');
+            while (this.isInBoard(it, jt)) {
+                if (this.isEnemyType(it, jt, piece, 2)) {
                     return true;
-                } else if (this.isEnemyType(piece, move[0], move[1], 5)) {
-                    console.log('queen attacking');
+                } else if (this.isEnemyType(it, jt, piece, 5)) {
                     return true;
                 } else if (
-                    this.isAlly(piece, move[0], move[1]) ||
-                    this.isEnemy(piece, move[0], move[1])
+                    this.isAlly(it, jt, piece) ||
+                    this.isEnemy(it, jt, piece)
                 ) {
                     break;
                 }
-
                 steps += 1;
-                move = [i + steps * direction[0], j + steps * direction[1]];
+                it = i + steps * direction[0];
+                jt = j + steps * direction[1];
             }
         }
+        return false;
+    }
 
-        // Long range (straight line) threat
-        directions = [
+    isAttackedOnStraightLine(i, j, piece) {
+        let directions = [
             [1, 0],
             [-1, 0],
             [0, 1],
@@ -431,35 +433,59 @@ class Game {
         for (let idx = 0; idx < directions.length; idx++) {
             let direction = directions[idx];
             let steps = 1;
-            let move = [i + steps * direction[0], j + steps * direction[1]];
+            let it = i + steps * direction[0];
+            let jt = j + steps * direction[1];
 
-            while (this.isInBoard(move[0], move[1])) {
-                if (this.isEnemyType(piece, move[0], move[1], 4)) {
-                    console.log('rock attacking');
+            while (this.isInBoard(it, jt)) {
+                if (this.isEnemyType(it, jt, piece, 4)) {
                     return true;
-                } else if (this.isEnemyType(piece, move[0], move[1], 5)) {
-                    console.log('queen attacking');
+                } else if (this.isEnemyType(it, jt, piece, 5)) {
                     return true;
                 } else if (
-                    this.isAlly(piece, move[0], move[1]) ||
-                    this.isEnemy(piece, move[0], move[1])
+                    this.isAlly(it, jt, piece) ||
+                    this.isEnemy(it, jt, piece)
                 ) {
                     break;
                 }
-
                 steps += 1;
-                move = [i + steps * direction[0], j + steps * direction[1]];
+                it = i + steps * direction[0];
+                jt = j + steps * direction[1];
             }
         }
+        return false;
+    }
 
+    /**
+     * Checks if piece on position (i, j) is attacked by any piece of the enemy.
+     *
+     * @param {number} i - Row number
+     * @param {number} j - Column number
+     * @param {number} piece - Piece that is asking the question
+     */
+    isAttacked(i, j, piece) {
+        if (this.isAttackedByPawn(i, j, piece)) {
+            return true;
+        }
+        if (this.isAttackedByKnight(i, j, piece)) {
+            return true;
+        }
+        if (this.isAttackedByKing(i, j, piece)) {
+            return true;
+        }
+        if (this.isAttackedOnDiagonal(i, j, piece)) {
+            return true;
+        }
+        if (this.isAttackedOnStraightLine(i, j, piece)) {
+            return true;
+        }
         return false;
     }
 
     isChecked(side) {
         return this.isAttacked(
-            side * 6,
             this.kingPosition[side][0],
-            this.kingPosition[side][1]
+            this.kingPosition[side][1],
+            side * 6
         );
     }
 
@@ -534,7 +560,7 @@ class Game {
         return positions;
     }
 
-    searchLongMoves(piece, i, j, directions) {
+    getLongMoves(piece, i, j, directions) {
         let moves = [];
 
         directions.forEach(direction => {
@@ -544,7 +570,7 @@ class Game {
             while (this.isInBoard(move[0], move[1])) {
                 if (this.isEmpty(move[0], move[1])) {
                     moves.push(move);
-                } else if (this.isEnemy(piece, move[0], move[1])) {
+                } else if (this.isEnemy(move[0], move[1], piece)) {
                     moves.push(move);
                     break;
                 } else {
@@ -559,7 +585,7 @@ class Game {
         return moves;
     }
 
-    searchShortMoves(piece, i, j, fields) {
+    getShortMoves(piece, i, j, fields) {
         let moves = [];
 
         fields.forEach(increments => {
@@ -568,7 +594,7 @@ class Game {
             if (this.isInBoard(move[0], move[1])) {
                 if (this.isEmpty(move[0], move[1])) {
                     moves.push(move);
-                } else if (this.isEnemy(piece, move[0], move[1])) {
+                } else if (this.isEnemy(move[0], move[1], piece)) {
                     moves.push(move);
                 }
             }
@@ -599,9 +625,9 @@ class Game {
                 (this.board[castleLine][3] === 0)
             ) {
                 if (
-                    !this.isAttacked(side, castleLine, 2) &
-                    !this.isAttacked(side, castleLine, 3) &
-                    !this.isAttacked(side, castleLine, 4)
+                    !this.isAttacked(castleLine, 2, side) &
+                    !this.isAttacked(castleLine, 3, side) &
+                    !this.isAttacked(castleLine, 4, side)
                 ) {
                     moves.push([castleLine, 2]);
                 }
@@ -615,8 +641,8 @@ class Game {
                 (this.board[castleLine][6] === 0)
             ) {
                 if (
-                    !this.isAttacked(side, castleLine, 4) &
-                    !this.isAttacked(side, castleLine, 5)
+                    !this.isAttacked(castleLine, 4, side) &
+                    !this.isAttacked(castleLine, 5, side)
                 ) {
                     moves.push([castleLine, 6]);
                 }
@@ -651,7 +677,7 @@ class Game {
             // Attack
             [1, -1].forEach(increment => {
                 if (this.isInBoard(i + piece, j + increment)) {
-                    if (this.isEnemy(piece, i + piece, j + increment)) {
+                    if (this.isEnemy(i + piece, j + increment, piece)) {
                         moves.push([i + piece, j + increment]);
                     }
                     // En passant attack
@@ -677,7 +703,7 @@ class Game {
 
         if (piece === 3 || piece === -3) {
             moves.push(
-                ...this.searchShortMoves(piece, i, j, [
+                ...this.getShortMoves(piece, i, j, [
                     [1, 2],
                     [-1, 2],
                     [1, -2],
@@ -700,7 +726,7 @@ class Game {
 
         if (piece === 2 || piece === -2) {
             moves.push(
-                ...this.searchLongMoves(piece, i, j, [
+                ...this.getLongMoves(piece, i, j, [
                     [-1, -1],
                     [-1, 1],
                     [1, -1],
@@ -719,7 +745,7 @@ class Game {
 
         if (piece === 4 || piece === -4) {
             moves.push(
-                ...this.searchLongMoves(piece, i, j, [
+                ...this.getLongMoves(piece, i, j, [
                     [1, 0],
                     [-1, 0],
                     [0, 1],
@@ -738,7 +764,7 @@ class Game {
 
         if (piece === 5 || piece === -5) {
             moves.push(
-                ...this.searchLongMoves(piece, i, j, [
+                ...this.getLongMoves(piece, i, j, [
                     [1, 0],
                     [-1, 0],
                     [0, 1],
@@ -746,7 +772,7 @@ class Game {
                 ])
             );
             moves.push(
-                ...this.searchLongMoves(piece, i, j, [
+                ...this.getLongMoves(piece, i, j, [
                     [-1, -1],
                     [-1, 1],
                     [1, -1],
@@ -765,7 +791,7 @@ class Game {
 
         if (piece === 6 || piece === -6) {
             moves.push(
-                ...this.searchShortMoves(piece, i, j, [
+                ...this.getShortMoves(piece, i, j, [
                     [1, 1],
                     [-1, 1],
                     [1, -1],
@@ -822,6 +848,11 @@ class Game {
 
         return moves;
     }
+
+    getPiece(i, j) {
+        return this.board[i][j];
+    }
+
     /************************
      * Controlling the game *
      ************************/
