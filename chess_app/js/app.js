@@ -144,7 +144,7 @@ function performPromotion() {
     showPromotionModal();
 
     // Block the game until promotion piece is chosen
-    game.isBlocked = true;
+    game.toggleBlockGame();
 }
 
 const ui = {
@@ -232,7 +232,8 @@ promotionPieces.forEach(p => {
                 break;
         }
 
-        game.isBlocked = false;
+        // game.isBlocked = false;
+        game.toggleBlockGame();
         hidePromotionModal();
 
         // Proceed with the move

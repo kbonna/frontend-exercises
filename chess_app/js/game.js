@@ -6,16 +6,16 @@
  *
  * @returns {boolean}
  */
-Array.prototype.containsSubarray = function(subArray) {
-    if (!Array.isArray(subArray)) {
-        throw new TypeError(`${subArray} is not an array`);
+Array.prototype.containsSubarray = function(subArr) {
+    if (!Array.isArray(subArr)) {
+        throw new TypeError(`${subArr} is not an array`);
     }
 
     for (let idx = 0; idx < this.length; idx++) {
         let match = true;
 
-        for (let idy = 0; idy < subArray.length; idy++) {
-            if (this[idx][idy] !== subArray[idy]) {
+        for (let idy = 0; idy < subArr.length; idy++) {
+            if (this[idx][idy] !== subArr[idy]) {
                 match = false;
                 break;
             }
@@ -26,6 +26,25 @@ Array.prototype.containsSubarray = function(subArray) {
         }
     }
     return false;
+};
+
+/**
+ * Checks if two arrays contains same set of vectors.
+ *
+ * @param {Array<Array>} arr - Array of fields
+ *
+ * @returns {boolean}
+ */
+Array.prototype.isSameAs = function(arr) {
+    if (this.length !== arr.length) {
+        return false;
+    }
+    for (let idx = 0; idx < this.length; idx++) {
+        if (!this.containsSubarray(arr[idx])) {
+            return false;
+        }
+    }
+    return true;
 };
 
 /**
@@ -126,21 +145,47 @@ class Game {
 
         // Initialize all fields
         this.resetGame();
+
+        // Useful const arrays
+        this.MOVES = {
+            knightIncrements: [
+                [1, 2],
+                [-1, 2],
+                [1, -2],
+                [-1, -2],
+                [2, 1],
+                [-2, 1],
+                [2, -1],
+                [-2, -1]
+            ],
+            kingIncrements: [
+                [1, 1],
+                [-1, 1],
+                [1, -1],
+                [-1, -1],
+                [0, 1],
+                [0, -1],
+                [1, 0],
+                [-1, 0]
+            ],
+            diagonalDirections: [
+                [1, 1],
+                [-1, 1],
+                [1, -1],
+                [-1, -1]
+            ],
+            straightLineDirections: [
+                [1, 0],
+                [-1, 0],
+                [0, 1],
+                [0, -1]
+            ]
+        };
     }
 
-    /**
-     * @property {boolean} - Tells you if game is over
-     */
-    get checkMate() {
-        return this.isCheckMate(this.whoseTurn);
-    }
-
-    /**
-     * @property {null} - Formatted chessboard representation as a string
-     */
-    get repr() {
-        return this.drawBoard();
-    }
+    /***************
+     * Set methods *
+     ***************/
 
     /**
      * Resets game object as if it would be initialized again. Resets pieces
@@ -200,6 +245,29 @@ class Game {
     }
 
     /**
+     * Adds enpassant possibility. For testing purpose only.
+     *
+     * @param {Array<number>} field - Field to move after enpassant.
+     */
+    setEnpassant(field) {
+        this.enpassant = [field];
+    }
+
+    /**
+     * For testing purpose only.
+     */
+    disableCastling() {
+        this.canCastle = { '-1': [false, false], '1': [false, false] };
+    }
+
+    /**
+     * For testing purpose only.
+     */
+    resetCastling() {
+        this.canCastle = { '-1': [true, true], '1': [true, true] };
+    }
+
+    /**
      * Toggle between blocked and not blocked state.
      */
     toggleBlockGame() {
@@ -209,6 +277,13 @@ class Game {
     /*********************
      * Visualize methods *
      *********************/
+
+    /**
+     * @property {null} - Formatted chessboard representation as a string
+     */
+    get repr() {
+        return this.drawBoard();
+    }
 
     /**
      * Print formatted representation of the chessboard to the console.
@@ -331,18 +406,8 @@ class Game {
     }
 
     isAttackedByKnight(i, j, piece) {
-        let increments = [
-            [1, 2],
-            [-1, 2],
-            [1, -2],
-            [-1, -2],
-            [2, 1],
-            [-2, 1],
-            [2, -1],
-            [-2, -1]
-        ];
-        for (let idx = 0; idx < increments.length; idx++) {
-            let increment = increments[idx];
+        for (let idx = 0; idx < this.MOVES.knightIncrements.length; idx++) {
+            let increment = this.MOVES.knightIncrements[idx];
 
             if (this.isInBoard(i + increment[0], j + increment[1])) {
                 if (
@@ -361,18 +426,8 @@ class Game {
     }
 
     isAttackedByKing(i, j, piece) {
-        let increments = [
-            [1, 1],
-            [-1, 1],
-            [1, -1],
-            [-1, -1],
-            [0, 1],
-            [0, -1],
-            [1, 0],
-            [-1, 0]
-        ];
-        for (let idx = 0; idx < increments.length; idx++) {
-            let increment = increments[idx];
+        for (let idx = 0; idx < this.MOVES.kingIncrements.length; idx++) {
+            let increment = this.MOVES.kingIncrements[idx];
 
             if (this.isInBoard(i + increment[0], j + increment[1])) {
                 if (
@@ -383,7 +438,6 @@ class Game {
                         6
                     )
                 ) {
-                    console.log('king attacking');
                     return true;
                 }
             }
@@ -392,14 +446,8 @@ class Game {
     }
 
     isAttackedOnDiagonal(i, j, piece) {
-        let directions = [
-            [1, 1],
-            [-1, 1],
-            [1, -1],
-            [-1, -1]
-        ];
-        for (let idx = 0; idx < directions.length; idx++) {
-            let direction = directions[idx];
+        for (let idx = 0; idx < this.MOVES.diagonalDirections.length; idx++) {
+            let direction = this.MOVES.diagonalDirections[idx];
             let steps = 1;
             let it = i + steps * direction[0];
             let jt = j + steps * direction[1];
@@ -424,14 +472,12 @@ class Game {
     }
 
     isAttackedOnStraightLine(i, j, piece) {
-        let directions = [
-            [1, 0],
-            [-1, 0],
-            [0, 1],
-            [0, -1]
-        ];
-        for (let idx = 0; idx < directions.length; idx++) {
-            let direction = directions[idx];
+        for (
+            let idx = 0;
+            idx < this.MOVES.straightLineDirections.length;
+            idx++
+        ) {
+            let direction = this.MOVES.straightLineDirections[idx];
             let steps = 1;
             let it = i + steps * direction[0];
             let jt = j + steps * direction[1];
@@ -544,9 +590,20 @@ class Game {
         return true;
     }
 
-    /*********************
-     * Movement checking *
-     *********************/
+    /***************
+     * Get methods *
+     ***************/
+
+    /**
+     * @property {boolean} - Tells you if game is over
+     */
+    get checkMate() {
+        return this.isCheckMate(this.whoseTurn);
+    }
+
+    getPiece(i, j) {
+        return this.board[i][j];
+    }
 
     getPiecesPositions(side) {
         let positions = [];
@@ -560,7 +617,17 @@ class Game {
         return positions;
     }
 
-    getLongMoves(piece, i, j, directions) {
+    /**
+     * Returns all moves than can be extended by multiplying amount of steps in
+     * some direction. Terminates search when edge of the board is reached or
+     * another piece is spotted.
+     *
+     * @param {number} i - Row number
+     * @param {number} j - Column number
+     * @param {number} piece - Piece getting moves
+     * @param {Array<Array>} directions - List of incremented fields
+     */
+    getLongMoves(i, j, piece, directions) {
         let moves = [];
 
         directions.forEach(direction => {
@@ -585,7 +652,17 @@ class Game {
         return moves;
     }
 
-    getShortMoves(piece, i, j, fields) {
+    /**
+     * Returns all moves than can be reached by adding elements from fields
+     * list. Exclude moves that lead to leaving the board and moves that gives
+     * collision with ally piece.
+     *
+     * @param {number} i - Row number
+     * @param {number} j - Column number
+     * @param {number} piece - Piece getting moves
+     * @param {Array<Array>} fields - List of field changes
+     */
+    getShortMoves(i, j, piece, fields) {
         let moves = [];
 
         fields.forEach(increments => {
@@ -703,16 +780,7 @@ class Game {
 
         if (piece === 3 || piece === -3) {
             moves.push(
-                ...this.getShortMoves(piece, i, j, [
-                    [1, 2],
-                    [-1, 2],
-                    [1, -2],
-                    [-1, -2],
-                    [2, 1],
-                    [-2, 1],
-                    [2, -1],
-                    [-2, -1]
-                ])
+                ...this.getShortMoves(i, j, piece, this.MOVES.knightIncrements)
             );
         } else {
             throw 'selected piece is not a knight but getKnightMoves was called';
@@ -726,12 +794,7 @@ class Game {
 
         if (piece === 2 || piece === -2) {
             moves.push(
-                ...this.getLongMoves(piece, i, j, [
-                    [-1, -1],
-                    [-1, 1],
-                    [1, -1],
-                    [1, 1]
-                ])
+                ...this.getLongMoves(i, j, piece, this.MOVES.diagonalDirections)
             );
         } else {
             throw 'selected piece is not a bishop but getBishopMoves was called';
@@ -745,12 +808,12 @@ class Game {
 
         if (piece === 4 || piece === -4) {
             moves.push(
-                ...this.getLongMoves(piece, i, j, [
-                    [1, 0],
-                    [-1, 0],
-                    [0, 1],
-                    [0, -1]
-                ])
+                ...this.getLongMoves(
+                    i,
+                    j,
+                    piece,
+                    this.MOVES.straightLineDirections
+                )
             );
         } else {
             throw 'selected piece is not a rock but getRockMoves was called';
@@ -764,20 +827,15 @@ class Game {
 
         if (piece === 5 || piece === -5) {
             moves.push(
-                ...this.getLongMoves(piece, i, j, [
-                    [1, 0],
-                    [-1, 0],
-                    [0, 1],
-                    [0, -1]
-                ])
+                ...this.getLongMoves(
+                    i,
+                    j,
+                    piece,
+                    this.MOVES.straightLineDirections
+                )
             );
             moves.push(
-                ...this.getLongMoves(piece, i, j, [
-                    [-1, -1],
-                    [-1, 1],
-                    [1, -1],
-                    [1, 1]
-                ])
+                ...this.getLongMoves(i, j, piece, this.MOVES.diagonalDirections)
             );
         } else {
             throw 'selected piece is not a queen but getQueenMoves was called';
@@ -791,16 +849,7 @@ class Game {
 
         if (piece === 6 || piece === -6) {
             moves.push(
-                ...this.getShortMoves(piece, i, j, [
-                    [1, 1],
-                    [-1, 1],
-                    [1, -1],
-                    [-1, -1],
-                    [0, 1],
-                    [0, -1],
-                    [1, 0],
-                    [-1, 0]
-                ])
+                ...this.getShortMoves(i, j, piece, this.MOVES.kingIncrements)
             );
             moves.push(...this.getCastleMoves(Math.sign(piece)));
         } else {
@@ -847,10 +896,6 @@ class Game {
         moves = moves.filter(move => !this.isCheckedAfterMove([i, j], move));
 
         return moves;
-    }
-
-    getPiece(i, j) {
-        return this.board[i][j];
     }
 
     /************************
@@ -941,9 +986,8 @@ class Game {
             this.kingPosition[Math.sign(piece)] = moveTo;
         }
 
-        //=== procedures for the other side ====================================
+        // Procedures for the other side
         this.whoseTurn *= -1;
-        //======================================================================
 
         // Check and check-mate detection
         this.kingChecked[this.whoseTurn] = this.isChecked(this.whoseTurn);

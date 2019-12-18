@@ -4,11 +4,15 @@ beforeAll(() => {
     return (game = new Game());
 });
 
+beforeEach(() => {
+    game.clearBoard();
+});
+
 afterEach(() => {
     game.resetGame();
 });
 
-// containsSubarray function
+// containsSubarray array method
 
 test('containsSubarray producing correct output', () => {
     const myArr = [
@@ -22,6 +26,24 @@ test('containsSubarray producing correct output', () => {
     expect(() => {
         const result_wrong = myArr.containsSubarray(null);
     }).toThrow(TypeError);
+});
+
+// isSameAs array method
+
+test('isSameAs producing correct output', () => {
+    const myArr = [
+        [0, 1],
+        [2, 3],
+        [4, 5]
+    ];
+    const sameArray = [...myArr];
+    const reversedArray = [...myArr.reverse()];
+    const biggerArray = [...myArr, [6, 7]];
+    const smallerArray = [...myArr.slice(1)];
+    expect(myArr.isSameAs(sameArray)).toBe(true);
+    expect(myArr.isSameAs(reversedArray)).toBe(true);
+    expect(myArr.isSameAs(biggerArray)).toBe(false);
+    expect(myArr.isSameAs(smallerArray)).toBe(false);
 });
 
 // populateBoard
@@ -51,33 +73,6 @@ test('toggling game blocked state', () => {
     game.toggleBlockGame();
     expect(game.isBlocked).toBe(false);
 });
-
-// getPawnMoves
-// test('pawn move from first line (white)', () => {
-//     game.clearBoard();
-//     game.board[1][0] = 1;
-//     expect(game.getPawnMoves(1, 0).sort()).toEqual([[3, 0], [2, 0]].sort());
-// });
-
-// test('pawn move from first line (black)', () => {
-//     game.clearBoard();
-//     game.board[6][1] = -1;
-//     expect(game.getPawnMoves(6, 1).sort()).toEqual([[5, 1], [4, 1]].sort());
-// });
-
-// test('pawn blocked by ally)', () => {
-//     game.clearBoard();
-//     game.board[2][6] = 1;
-//     game.board[3][6] = 1;
-//     expect(game.getPawnMoves(2, 6)).toEqual([]);
-// });
-
-// test('pawn with attack possibility near board edge', () => {
-//     game.clearBoard();
-//     game.board[5][7] = -1;
-//     game.board[4][6] = 1;
-//     expect(game.getPawnMoves(5, 7).sort()).toEqual([[4, 6], [4, 7]].sort());
-// });
 
 // isAttacked
 
@@ -244,5 +239,171 @@ test('isAttacked validated for king', () => {
         game.setPiece(0, 0, side);
         game.setPiece(1, 1, 6 * side);
         expect(game.isAttacked(0, 0, side)).toBe(false);
+    });
+});
+
+// getPawnMoves
+
+test('getPawnMoves validated', () => {
+    // move from the first line
+    game.clearBoard();
+    game.setPiece(1, 0, 1);
+    expect(
+        game.getPawnMoves(1, 0).isSameAs([
+            [2, 0],
+            [3, 0]
+        ])
+    ).toBe(true);
+
+    game.clearBoard();
+    game.setPiece(6, 0, -1);
+    expect(
+        game.getPawnMoves(6, 0).isSameAs([
+            [5, 0],
+            [4, 0]
+        ])
+    ).toBe(true);
+
+    // regular move
+    game.clearBoard();
+    game.setPiece(2, 0, 1);
+    expect(game.getPawnMoves(2, 0).isSameAs([[3, 0]])).toBe(true);
+
+    game.clearBoard();
+    game.setPiece(5, 0, -1);
+    expect(game.getPawnMoves(5, 0).isSameAs([[4, 0]])).toBe(true);
+
+    // enpassant kill
+    game.clearBoard();
+    game.setPiece(4, 0, 1);
+    game.setEnpassant([5, 1]);
+    expect(
+        game.getPawnMoves(4, 0).isSameAs([
+            [5, 0],
+            [5, 1]
+        ])
+    ).toBe(true);
+
+    game.clearBoard();
+    game.setPiece(3, 0, -1);
+    game.setEnpassant([2, 1]);
+    expect(
+        game.getPawnMoves(3, 0).isSameAs([
+            [2, 0],
+            [2, 1]
+        ])
+    ).toBe(true);
+});
+
+// getBishopMoves
+
+test('getBishopMoves validated', () => {
+    [1, -1].forEach(side => {
+        game.clearBoard();
+        game.setPiece(1, 1, 2 * side);
+        game.setPiece(3, 3, -side);
+        expect(
+            game.getBishopMoves(1, 1).isSameAs([
+                [0, 0],
+                [0, 2],
+                [2, 0],
+                [2, 2],
+                [3, 3]
+            ])
+        ).toBe(true);
+    });
+});
+
+// getKnightMoves
+
+test('getKnightMoves validated', () => {
+    [1, -1].forEach(side => {
+        game.clearBoard();
+        game.setPiece(3, 3, 3 * side);
+        game.setPiece(4, 5, side);
+        game.setPiece(5, 4, -side);
+        expect(
+            game.getKnightMoves(3, 3).isSameAs([
+                [5, 4],
+                [5, 2],
+                [4, 1],
+                [1, 2],
+                [2, 1],
+                [2, 5],
+                [1, 4]
+            ])
+        ).toBe(true);
+    });
+});
+
+// getRockMoves
+
+test('getRockMoves validated', () => {
+    [1, -1].forEach(side => {
+        game.clearBoard();
+        game.setPiece(1, 1, 4 * side);
+        game.setPiece(1, 3, side);
+        game.setPiece(3, 1, -side);
+        expect(
+            game.getRockMoves(1, 1).isSameAs([
+                [1, 0],
+                [0, 1],
+                [2, 1],
+                [1, 2],
+                [3, 1]
+            ])
+        ).toBe(true);
+    });
+});
+
+// getQueenMoves
+
+test('getQueenMoves validated', () => {
+    [1, -1].forEach(side => {
+        game.clearBoard();
+        game.setPiece(1, 1, 5 * side);
+        game.setPiece(3, 0, side);
+        game.setPiece(3, 1, side);
+        game.setPiece(3, 2, side);
+        game.setPiece(3, 3, side);
+        game.setPiece(2, 3, -side);
+        game.setPiece(1, 3, -side);
+        game.setPiece(0, 3, -side);
+        expect(
+            game.getQueenMoves(1, 1).isSameAs([
+                [0, 0],
+                [0, 1],
+                [0, 2],
+                [1, 0],
+                [1, 2],
+                [1, 3],
+                [2, 0],
+                [2, 1],
+                [2, 2]
+            ])
+        ).toBe(true);
+    });
+});
+
+// getKingMoves
+
+test('getKingMoves validated', () => {
+    [1, -1].forEach(side => {
+        game.clearBoard();
+        game.disableCastling();
+        game.setPiece(1, 1, 6 * side);
+        game.setPiece(2, 2, side);
+        game.setPiece(2, 1, -side);
+        expect(
+            game.getKingMoves(1, 1).isSameAs([
+                [0, 0],
+                [0, 1],
+                [0, 2],
+                [1, 0],
+                [1, 2],
+                [2, 0],
+                [2, 1]
+            ])
+        ).toBe(true);
     });
 });
