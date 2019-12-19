@@ -20,6 +20,10 @@ function handleCheckMate(game, timer, ui) {
 
 const clockWhite = document.querySelector('.clock__time--white');
 const clockBlack = document.querySelector('.clock__time--black');
+const dotWhite = document.querySelector('.clock__dot--white');
+const dotBlack = document.querySelector('.clock__dot--black');
+const rowWhite = document.querySelector('.clock__row--white');
+const rowBlack = document.querySelector('.clock__row--black');
 const clockSetting = document.querySelector('#clock__setting');
 
 const toggleButton = document.querySelector('#toggle');
@@ -30,8 +34,6 @@ const fieldList = document.querySelectorAll('.board__field');
 const promotionModal = document.querySelector('.modal-promotion');
 const promotionPieces = document.querySelectorAll('.modal-promotion__piece');
 const board = new Array(8);
-
-let reversed = false;
 
 for (let idx = 0; idx < board.length; idx++) {
     board[idx] = new Array(8);
@@ -112,6 +114,19 @@ function highlightMoves(moves) {
     });
 }
 
+function highlightCheck() {
+    if (game.kingChecked[1]) {
+        dotWhite.classList.add('clock__dot--checked');
+    } else {
+        dotWhite.classList.remove('clock__dot--checked');
+    }
+    if (game.kingChecked[-1]) {
+        dotBlack.classList.add('clock__dot--checked');
+    } else {
+        dotBlack.classList.remove('clock__dot--checked');
+    }
+}
+
 function cancelHighlight() {
     board.forEach(row => {
         row.forEach(field => {
@@ -147,6 +162,15 @@ function performPromotion() {
     game.toggleBlockGame();
 }
 
+function performMove() {
+    game.move(ui.moveFrom, ui.moveTo);
+    highlightCheck();
+    if (game.checkMate) {
+        handleCheckMate(game, timer, ui);
+    }
+    draw();
+}
+
 const ui = {
     toggleEnabled: true,
     gameStarted: false,
@@ -154,7 +178,8 @@ const ui = {
     movesAllowed: [],
     moveFrom: [],
     moveTo: [],
-    currentPiece: null
+    currentPiece: null,
+    reversed: false
 };
 
 /**********************
@@ -181,10 +206,10 @@ toggleButton.addEventListener('click', e => {
         timer.togglePause();
         game.toggleBlockGame();
 
-        if (toggleButton.innerHTML === 'Start') {
-            toggleButton.innerHTML = 'Pause';
-        } else {
+        if (timer.paused) {
             toggleButton.innerHTML = 'Start';
+        } else {
+            toggleButton.innerHTML = 'Pause';
         }
     }
 });
@@ -200,13 +225,15 @@ restartButton.addEventListener('click', e => {
     timer.resetTimer();
 
     ui.toggleEnabled = true;
+    highlightCheck();
     cancelHighlight();
     draw();
 });
 
 swapButton.addEventListener('click', e => {
     board.reverse();
-    reversed = !reversed;
+    ui.reversed = !ui.reversed;
+    rowWhite.style.order = ui.reversed ? '-1' : '1';
     draw();
 });
 
@@ -232,16 +259,11 @@ promotionPieces.forEach(p => {
                 break;
         }
 
-        // game.isBlocked = false;
         game.toggleBlockGame();
         hidePromotionModal();
 
         // Proceed with the move
-        game.move(ui.moveFrom, ui.moveTo);
-        if (game.checkMate) {
-            handleCheckMate(game, timer, ui);
-        }
-        draw();
+        performMove();
     });
 });
 
@@ -250,7 +272,7 @@ board.forEach((row, ii) => {
         field.addEventListener('click', e => {
             // Interpreting clicks for upside down board (change first coordinate)
             let i = ii;
-            if (reversed) {
+            if (ui.reversed) {
                 i = 7 - ii;
             }
 
@@ -279,11 +301,7 @@ board.forEach((row, ii) => {
                         performPromotion();
                     }
                     timer.cacheTime();
-                    game.move(ui.moveFrom, ui.moveTo);
-                    if (game.checkMate) {
-                        handleCheckMate(game, timer, ui);
-                    }
-                    draw();
+                    performMove();
                 }
                 cancelHighlight();
                 ui.highlight = false;

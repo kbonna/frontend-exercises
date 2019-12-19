@@ -681,14 +681,19 @@ class Game {
     }
 
     /**
-     * Automatically check castle possibility and return array of possible king
-     * moves related to castling.
+     * Returns possible castle moves for king located on position (i, j).
+     * Castling can be performend only when:
+     *  (1) King and rock did not move since the beginning of the game. This is
+     *      handled by canCastle property.
+     *  (2) King is not checked.
      *
-     * @param {number} side
+     * @param {number} i - Row number
+     * @param {number} j - Column number
      */
-    getCastleMoves(side) {
-        let moves = [];
+    getCastleMoves(i, j) {
+        const side = Math.sign(this.board[i][j]);
         let castleLine = 0;
+        let moves = [];
 
         if (side === -1) {
             castleLine = 7;
@@ -729,6 +734,37 @@ class Game {
         return moves;
     }
 
+    /**
+     * Returns possible enpassant moves for pawn located on position (i, j).
+     * Enpassant kill can be performend only when:
+     *  (1) In the previous move opponent pawn moved by 2 from the first line.
+     *  (2) Enpassant kill won't lead to king exposure to the check.
+     *
+     * @param {number} i - Row number
+     * @param {number} j - Column number
+     */
+    getEnpassantMoves(i, j) {
+        let piece = this.board[i][j];
+        let moves = [];
+
+        [1, -1].forEach(increment => {
+            const moveTo = [i + piece, j + increment];
+
+            if (this.enpassant.containsSubarray(moveTo)) {
+                // Fake enpassant kill
+                this.board[i][j + increment] = 0;
+
+                if (!this.isCheckedAfterMove([i, j], moveTo)) {
+                    moves.push([i + piece, j + increment]);
+                }
+
+                // Undo fake move
+                this.board[i][j + increment] = -piece;
+            }
+        });
+        return moves;
+    }
+
     getPawnMoves(i, j) {
         let piece = this.board[i][j];
         let moves = [];
@@ -757,17 +793,11 @@ class Game {
                     if (this.isEnemy(i + piece, j + increment, piece)) {
                         moves.push([i + piece, j + increment]);
                     }
-                    // En passant attack
-                    if (
-                        this.enpassant.containsSubarray([
-                            i + piece,
-                            j + increment
-                        ])
-                    ) {
-                        moves.push([i + piece, j + increment]);
-                    }
                 }
             });
+
+            // En passant attack
+            moves.push(...this.getEnpassantMoves(i, j));
         } else {
             throw 'selected piece is not a pawn but getPawnMoves was called';
         }
@@ -851,7 +881,7 @@ class Game {
             moves.push(
                 ...this.getShortMoves(i, j, piece, this.MOVES.kingIncrements)
             );
-            moves.push(...this.getCastleMoves(Math.sign(piece)));
+            moves.push(...this.getCastleMoves(i, j));
         } else {
             throw 'selected piece is not a knight but getKnightMoves was called';
         }
@@ -990,7 +1020,11 @@ class Game {
         this.whoseTurn *= -1;
 
         // Check and check-mate detection
-        this.kingChecked[this.whoseTurn] = this.isChecked(this.whoseTurn);
+        [-1, 1].forEach(side => {
+            this.kingChecked[side] = this.isChecked(side);
+        });
+        // this.kingChecked[this.whoseTurn] = this.isChecked(this.whoseTurn);
+        // this.kingChecked[-this.whoseTurn] = this.isChecked(-this.whoseTurn);
 
         if (this.isCheckMate(this.whoseTurn)) {
             this.isBlocked = true;

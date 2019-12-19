@@ -4,12 +4,9 @@ beforeAll(() => {
     return (game = new Game());
 });
 
-beforeEach(() => {
-    game.clearBoard();
-});
-
 afterEach(() => {
     game.resetGame();
+    game.toggleBlockGame();
 });
 
 // containsSubarray array method
@@ -69,6 +66,7 @@ test('removing all pieces from chessboard', () => {
 // toggleBlockGame
 
 test('toggling game blocked state', () => {
+    game.resetGame();
     expect(game.isBlocked).toBe(true);
     game.toggleBlockGame();
     expect(game.isBlocked).toBe(false);
@@ -406,4 +404,80 @@ test('getKingMoves validated', () => {
             ])
         ).toBe(true);
     });
+});
+
+// getEnpassantMoves
+
+test('getEnpassantMoves in normal situation', () => {
+    game.clearBoard();
+    game.setEnpassant([5, 4]);
+    game.setPiece(4, 4, -1);
+    game.setPiece(4, 5, 1);
+    expect(game.getEnpassantMoves(4, 5).isSameAs([[5, 4]])).toBe(true);
+});
+
+test('getEnpassantMoves after enpassant move leading to check', () => {
+    game.clearBoard();
+    game.setEnpassant([5, 4]);
+    game.setPiece(4, 4, -1);
+    game.setPiece(4, 5, 1);
+    game.setPiece(4, 0, 6);
+    game.kingPosition[1] = [4, 0];
+    game.setPiece(4, 7, -4);
+    expect(game.getEnpassantMoves(4, 5).isSameAs([])).toBe(true);
+});
+
+// getCastleMoves
+
+test('getCastleMoves in normal situation', () => {
+    game.clearBoard();
+    game.setPiece(0, 4, 6);
+    game.setPiece(0, 0, 4);
+    game.setPiece(0, 7, 4);
+    expect(
+        game.getCastleMoves(0, 4).isSameAs([
+            [0, 2],
+            [0, 6]
+        ])
+    ).toBe(true);
+
+    game.clearBoard();
+    game.setPiece(7, 4, -6);
+    game.setPiece(7, 0, -4);
+    game.setPiece(7, 7, -4);
+    expect(
+        game.getCastleMoves(7, 4).isSameAs([
+            [7, 2],
+            [7, 6]
+        ])
+    ).toBe(true);
+});
+
+test('getCastleMoves when castling fields are attacked', () => {
+    game.clearBoard();
+    game.setPiece(0, 4, 6);
+    game.setPiece(0, 0, 4);
+    game.setPiece(0, 7, 4);
+    game.setPiece(7, 3, -4);
+    game.setPiece(7, 5, -4);
+    expect(game.getCastleMoves(0, 4).isSameAs([])).toBe(true);
+});
+
+test('getCastleMoves when castling fields are occupied', () => {
+    game.clearBoard();
+    game.setPiece(0, 4, 6);
+    game.setPiece(0, 0, 4);
+    game.setPiece(0, 7, 4);
+    game.setPiece(0, 3, 3);
+    game.setPiece(0, 5, 3);
+    expect(game.getCastleMoves(0, 4).isSameAs([])).toBe(true);
+});
+
+test('getCastleMoves when king is checked', () => {
+    game.clearBoard();
+    game.setPiece(7, 4, -6);
+    game.setPiece(7, 0, -4);
+    game.setPiece(7, 7, -4);
+    game.setPiece(0, 4, 4);
+    expect(game.getCastleMoves(7, 4).isSameAs([])).toBe(true);
 });
