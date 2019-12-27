@@ -1,0 +1,78 @@
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    height: 100vh;
+    background-color: #444;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Raleway', sans-serif;
+}
+
+.container {
+    border: 3px solid black;
+    border-radius: 10px;
+    background-color: rgb(0, 63, 156);
+    color: white;
+    padding: 3rem;
+    min-width: 500px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.title {
+    margin-bottom: 0.5rem;
+}
+
+.password-field {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: white;
+    width: 90%;
+    height: 3em;
+    color: black;
+    line-height: 3;
+    text-align: center;
+    font-size: 1.25rem;
+    font-weight: bold;
+    border: 2px solid #444;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+}
+
+.flag {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: start;
+    padding: 10px 0;
+    font-weight: bold;
+}
+
+.flag:last-of-type {
+    margin-bottom: 0.5rem;
+}
+
+.flag__length-wrapper {
+    display: flex;
+}
+
+#flag__length-disp {
+    margin-left: 1em;
+}
+
+.generate {
+    width: 100%;
+    border-radius: 100vh;
+    padding: 0.5em 0;
+    color: inherit;
+    background-color: inherit;
+    border: 2px solid white;
+}
