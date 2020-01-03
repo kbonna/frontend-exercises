@@ -1,0 +1,68 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+body {
+  font-family: 'Stoke', serif;
+  min-height: 100vh;
+  background-color: #222;
+  color: #eee;
+  display: -ms-grid;
+  display: grid;
+  justify-items: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.container {
+  text-align: center;
+}
+
+.title {
+  font-size: 4rem;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+}
+
+.title__span {
+  -webkit-transition: opacity 100ms ease-in-out, color 100ms 500ms ease-in-out, -webkit-transform 100ms ease-in-out;
+  transition: opacity 100ms ease-in-out, color 100ms 500ms ease-in-out, -webkit-transform 100ms ease-in-out;
+  transition: opacity 100ms ease-in-out, transform 100ms ease-in-out, color 100ms 500ms ease-in-out;
+  transition: opacity 100ms ease-in-out, transform 100ms ease-in-out, color 100ms 500ms ease-in-out, -webkit-transform 100ms ease-in-out;
+  display: inline-block;
+  min-width: 0.5em;
+  opacity: 0;
+  -webkit-transform: translate(-50px, -50px);
+          transform: translate(-50px, -50px);
+}
+
+.title__span--visible {
+  opacity: 1;
+  -webkit-transform: translate(0, 0);
+          transform: translate(0, 0);
+  background: -webkit-gradient(linear, left top, left bottom, from(#ff6a83), to(#56d5ff));
+  background: linear-gradient(#ff6a83, #56d5ff);
+  background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  font-weight: normal;
+}
+
+.subtitle__span {
+  -webkit-transition: opacity 50ms 2s ease-in-out;
+  transition: opacity 50ms 2s ease-in-out;
+  opacity: 0;
+}
+
+.subtitle__span--visible {
+  opacity: 1;
+}
+/*# sourceMappingURL=style.css.map */
