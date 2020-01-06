@@ -1,0 +1,25 @@
+.question {
+    font-size: 2rem;
+    font-weight: bold;
+
+    &__answers {
+        display: flex;
+        flex-direction: column;
+        min-width: 150px;
+    }
+
+    &__answer {
+        border: 1px solid rgba(0, 0, 0, 0.3);
+        border-radius: 0;
+        background-color: white;
+        margin-bottom: 5px;
+        line-height: 3;
+        cursor: pointer;
+        transition: all 100ms ease-in-out;
+    }
+
+    &__answer:hover {
+        background-color: rgba(0, 0, 0, 0.1);
+        transform: scale(1.05);
+    }
+}

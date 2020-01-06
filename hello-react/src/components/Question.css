@@ -1,0 +1,33 @@
+.question {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.question__answers {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  min-width: 150px;
+}
+
+.question__answer {
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 0;
+  background-color: white;
+  margin-bottom: 5px;
+  line-height: 3;
+  cursor: pointer;
+  -webkit-transition: all 100ms ease-in-out;
+  transition: all 100ms ease-in-out;
+}
+
+.question__answer:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  -webkit-transform: scale(1.05);
+          transform: scale(1.05);
+}
+/*# sourceMappingURL=Question.css.map */
