@@ -5,7 +5,8 @@ const secondHand = document.querySelector('.clock__second-hand');
 const minuteHand = document.querySelector('.clock__minute-hand');
 const hourHand = document.querySelector('.clock__hour-hand');
 
-const RADIUS = shield.offsetWidth / 2;
+const RADIUS = 150;
+console.log(RADIUS);
 
 deg_to_rad = angle => (angle / 180) * Math.PI;
 
