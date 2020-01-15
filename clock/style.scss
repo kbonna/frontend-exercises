@@ -1,0 +1,108 @@
+@import url('https://fonts.googleapis.com/css?family=Mansalva&display=swap');
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --clock-diameter: 300px;
+}
+
+body {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    font-size: 1.75rem;
+    font-family: 'Mansalva', cursive;
+    color: white;
+}
+
+span {
+    position: absolute;
+    display: block;
+}
+
+.title {
+    color: black;
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.clock {
+    &__shield {
+        border: 2px solid black;
+        width: var(--clock-diameter);
+        height: var(--clock-diameter);
+        border-radius: 100vh;
+        position: relative;
+
+        background-image: url('img/cat.jpg');
+        background-position: center;
+        background-size: 100%;
+        background-color: black;
+        background-blend-mode: luminosity;
+
+        box-shadow: 0 0 10px rgba(0, 0, 0, 50);
+    }
+
+    &__pin {
+        width: 16px;
+        height: 16px;
+        border-radius: 100vh;
+        border: 1px solid white;
+        background-color: gray;
+        position: absolute;
+        right: calc(0.5 * var(--clock-diameter) - 8px);
+        top: calc(0.5 * var(--clock-diameter) - 8px);
+        z-index: 4;
+    }
+
+    &__second-hand,
+    &__minute-hand,
+    &__hour-hand {
+        transform-origin: bottom;
+    }
+
+    &__second-hand {
+        background-color: red;
+        border-radius: 2px;
+
+        right: calc(0.5 * var(--clock-diameter));
+        height: calc(0.425 * var(--clock-diameter));
+        top: calc(0.075 * var(--clock-diameter));
+        width: 2px;
+
+        z-index: 3;
+    }
+
+    &__minute-hand {
+        background-color: rgba(255, 255, 255, 0.5);
+        border: 1px solid white;
+        border-radius: 5px;
+
+        width: 5px;
+        right: calc(0.5 * var(--clock-diameter) - 2.5px);
+        height: calc(0.375 * var(--clock-diameter));
+        top: calc(0.125 * var(--clock-diameter));
+
+        z-index: 2;
+    }
+
+    &__hour-hand {
+        background-color: rgba(255, 255, 255, 0.5);
+        border: 1px solid white;
+        border-radius: 7px;
+
+        width: 7px;
+        right: calc(0.5 * var(--clock-diameter) - 3.5px);
+        height: calc(0.2 * var(--clock-diameter));
+        top: calc(0.3 * var(--clock-diameter));
+
+        z-index: 1;
+    }
+}
