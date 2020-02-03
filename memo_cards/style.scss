@@ -1,0 +1,204 @@
+@import url('https://fonts.googleapis.com/css?family=Quicksand&display=swap');
+
+:root {
+    --margin-bottom: 1.5rem;
+    --col-gray: #666;
+    --col-dark-gray: #222;
+}
+
+*,
+*::before,
+*::after {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.material-icons.md-18 {
+    font-size: 18px;
+}
+.material-icons.mr-3 {
+    margin-right: 3px;
+}
+
+body {
+    font-family: 'Quicksand', sans-serif;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+}
+
+span,
+i {
+    display: inline-block;
+    vertical-align: middle;
+    line-height: 18px;
+}
+
+.container {
+    padding: 2rem;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.title {
+    font-size: 1.75rem;
+    margin-bottom: var(--margin-bottom);
+}
+
+.btn {
+    background-color: white;
+    min-width: 120px;
+    height: 2rem;
+    font-family: inherit;
+    border: 1px solid var(--col-gray);
+    border-radius: 3px;
+    cursor: pointer;
+
+    &--small-right-absolute {
+        position: absolute;
+        transform: translate(calc(-2rem + 10%)) scale(0.8);
+        right: 0;
+    }
+
+    &--clear {
+        position: absolute;
+        left: 3rem;
+        bottom: 3rem;
+    }
+
+    &__icon {
+        margin-right: 0.3em;
+    }
+}
+
+.cards {
+    height: 200px;
+    width: 400px;
+    position: relative;
+}
+
+.card {
+    width: inherit;
+    height: inherit;
+    margin-bottom: var(--margin-bottom);
+
+    &__inner {
+        position: relative;
+        box-shadow: 0 0 6px 2px rgba(0, 0, 0, 0.3);
+        height: 100%;
+        transition: all 500ms;
+        transform-style: preserve-3d;
+    }
+
+    &__hint {
+        position: absolute;
+        right: 0.5em;
+        top: 0.5em;
+        color: #999;
+        user-select: none;
+    }
+
+    &__front,
+    &__back {
+        background-color: white;
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        backface-visibility: hidden;
+        display: grid;
+        place-items: center;
+    }
+
+    &__front p,
+    &__back p {
+        font-size: 1.25rem;
+        color: var(--col-dark-gray);
+    }
+
+    &__back {
+        transform: rotateX(180deg);
+    }
+
+    &__inner--flipped {
+        transform: rotateX(180deg);
+    }
+}
+
+.card {
+    position: absolute;
+    transition: opacity 300ms ease-in-out, transform 500ms ease-in-out;
+
+    &--visible {
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    &--invisible-right {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    &--invisible-left {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+}
+
+.current {
+    color: var(--col-dark-gray);
+    margin-top: var(--margin-bottom);
+
+    &__number {
+        margin: 0 2rem;
+        line-height: 18px;
+    }
+
+    &__icon {
+        cursor: pointer;
+    }
+}
+
+.modal {
+    position: absolute;
+    width: 100%;
+    height: 100vh;
+    background-color: #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    &--hidden {
+        display: none;
+    }
+
+    &__title {
+        position: relative;
+    }
+
+    &__field {
+        width: 350px;
+        height: 80px;
+        padding: 0.75em;
+        margin-bottom: var(--margin-bottom);
+        resize: none;
+    }
+
+    &__label {
+        width: 350px;
+        margin-bottom: calc(0.5 * var(--margin-bottom));
+    }
+
+    &__close {
+        display: inline-block;
+        position: absolute;
+        cursor: pointer;
+        right: -5rem;
+        top: 0.5em;
+    }
+}

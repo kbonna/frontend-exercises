@@ -1,0 +1,101 @@
+:root {
+    --col-1: #4deeea;
+    --col-2: #74ee15;
+    --col-3: #ffe700;
+    --col-4: #f000ff;
+}
+
+*,
+*::before,
+*::after {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+@mixin add-glow($color) {
+    box-shadow: 0 0 8px 0 $color, 0 0 2px 2px $color, 0 0 4px 2px white;
+}
+
+body {
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    background-color: #444;
+}
+
+.pad {
+    --gap: 15px;
+    --border-radius: 5px;
+
+    @include add-glow(white);
+    background-color: #222;
+    border-radius: var(--border-radius);
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: var(--gap);
+    padding: var(--gap);
+
+    &__key {
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        background-color: #777;
+        border-radius: var(--border-radius);
+        width: 100px;
+        height: 100px;
+        transition: all 100ms ease-in-out;
+    }
+
+    &__key--looping {
+        animation: glow 500ms linear 0ms infinite alternate;
+    }
+
+    &__key--playing {
+        animation: glow-border 500ms linear 0ms infinite alternate;
+    }
+
+    &__key--looping,
+    &__key--playing {
+        &.pad__key--col-1 {
+            background-color: var(--col-1);
+            @include add-glow(var(--col-1));
+        }
+    }
+
+    &__key--looping,
+    &__key--playing {
+        &.pad__key--col-2 {
+            background-color: var(--col-2);
+            @include add-glow(var(--col-2));
+        }
+    }
+
+    &__key--looping,
+    &__key--playing {
+        &.pad__key--col-3 {
+            background-color: var(--col-3);
+            @include add-glow(var(--col-3));
+        }
+    }
+
+    &__key--looping,
+    &__key--playing {
+        &.pad__key--col-4 {
+            background-color: var(--col-4);
+            @include add-glow(var(--col-4));
+        }
+    }
+}
+
+@keyframes glow {
+    to {
+        background-color: #777;
+        box-shadow: none;
+    }
+}
+
+@keyframes glow-border {
+    to {
+        box-shadow: none;
+    }
+}

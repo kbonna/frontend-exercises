@@ -1,0 +1,113 @@
+:root {
+  --col-1: #4deeea;
+  --col-2: #74ee15;
+  --col-3: #ffe700;
+  --col-4: #f000ff;
+}
+
+*,
+*::before,
+*::after {
+  padding: 0;
+  margin: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+body {
+  display: -ms-grid;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  background-color: #444;
+}
+
+.pad {
+  --gap: 15px;
+  --border-radius: 5px;
+  -webkit-box-shadow: 0 0 8px 0 white, 0 0 2px 2px white, 0 0 4px 2px white;
+          box-shadow: 0 0 8px 0 white, 0 0 2px 2px white, 0 0 4px 2px white;
+  background-color: #222;
+  border-radius: var(--border-radius);
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (1fr)[4];
+      grid-template-columns: repeat(4, 1fr);
+  grid-gap: var(--gap);
+  padding: var(--gap);
+}
+
+.pad__key {
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  background-color: #777;
+  border-radius: var(--border-radius);
+  width: 100px;
+  height: 100px;
+  -webkit-transition: all 100ms ease-in-out;
+  transition: all 100ms ease-in-out;
+}
+
+.pad__key--looping {
+  -webkit-animation: glow 500ms linear 0ms infinite alternate;
+          animation: glow 500ms linear 0ms infinite alternate;
+}
+
+.pad__key--playing {
+  -webkit-animation: glow-border 500ms linear 0ms infinite alternate;
+          animation: glow-border 500ms linear 0ms infinite alternate;
+}
+
+.pad__key--looping.pad__key--col-1, .pad__key--playing.pad__key--col-1 {
+  background-color: var(--col-1);
+  -webkit-box-shadow: 0 0 8px 0 var(--col-1), 0 0 2px 2px var(--col-1), 0 0 4px 2px white;
+          box-shadow: 0 0 8px 0 var(--col-1), 0 0 2px 2px var(--col-1), 0 0 4px 2px white;
+}
+
+.pad__key--looping.pad__key--col-2, .pad__key--playing.pad__key--col-2 {
+  background-color: var(--col-2);
+  -webkit-box-shadow: 0 0 8px 0 var(--col-2), 0 0 2px 2px var(--col-2), 0 0 4px 2px white;
+          box-shadow: 0 0 8px 0 var(--col-2), 0 0 2px 2px var(--col-2), 0 0 4px 2px white;
+}
+
+.pad__key--looping.pad__key--col-3, .pad__key--playing.pad__key--col-3 {
+  background-color: var(--col-3);
+  -webkit-box-shadow: 0 0 8px 0 var(--col-3), 0 0 2px 2px var(--col-3), 0 0 4px 2px white;
+          box-shadow: 0 0 8px 0 var(--col-3), 0 0 2px 2px var(--col-3), 0 0 4px 2px white;
+}
+
+.pad__key--looping.pad__key--col-4, .pad__key--playing.pad__key--col-4 {
+  background-color: var(--col-4);
+  -webkit-box-shadow: 0 0 8px 0 var(--col-4), 0 0 2px 2px var(--col-4), 0 0 4px 2px white;
+          box-shadow: 0 0 8px 0 var(--col-4), 0 0 2px 2px var(--col-4), 0 0 4px 2px white;
+}
+
+@-webkit-keyframes glow {
+  to {
+    background-color: #777;
+    -webkit-box-shadow: none;
+            box-shadow: none;
+  }
+}
+
+@keyframes glow {
+  to {
+    background-color: #777;
+    -webkit-box-shadow: none;
+            box-shadow: none;
+  }
+}
+
+@-webkit-keyframes glow-border {
+  to {
+    -webkit-box-shadow: none;
+            box-shadow: none;
+  }
+}
+
+@keyframes glow-border {
+  to {
+    -webkit-box-shadow: none;
+            box-shadow: none;
+  }
+}
+/*# sourceMappingURL=style.css.map */

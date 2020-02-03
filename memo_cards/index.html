@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+        <title>Memo Cards</title>
+        <link rel="stylesheet" href="style.css" />
+        <link href="fas/css/all.css" rel="stylesheet" />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        />
+        <script src="app.js" defer></script>
+    </head>
+    <body>
+        <!-- card area -->
+        <div class="container">
+            <h1 class="title">Memory Cards</h1>
+            <button class="btn btn--small-right-absolute" id="add-card">
+                <i class="material-icons md-18 mr-3">add</i
+                ><span>Add New Card</span>
+            </button>
+
+            <div class="cards">
+                <!-- insert cards here -->
+            </div>
+
+            <!-- card navigation -->
+            <div class="current">
+                <i class="material-icons md-18 current__icon" id="prev-card"
+                    >chevron_left</i
+                >
+                <span class="current__number">/</span>
+                <i class="material-icons md-18 current__icon" id="next-card"
+                    >chevron_right</i
+                >
+            </div>
+        </div>
+        <!-- delete button -->
+        <button class="btn btn--clear" id="delete-cards">
+            <i class="material-icons md-18 btn__icon">delete</i
+            ><span>Clear Cards</span>
+        </button>
+        <!-- modal -->
+        <div class="modal modal--hidden">
+            <div class="modal__title">
+                <h1 class="title">Add New Card</h1>
+                <i
+                    class="material-icons md-18 mr-3 modal__close"
+                    id="close-modal"
+                    >close</i
+                >
+            </div>
+            <label for="question" class="modal__label">Question</label>
+            <textarea
+                name="question"
+                id="modal__question"
+                class="modal__field"
+                placeholder="Enter question..."
+            ></textarea>
+            <label for="answer" class="modal__label">Answer</label>
+            <textarea
+                name="answer"
+                id="modal__answer"
+                class="modal__field"
+                placeholder="Enter answer..."
+            ></textarea>
+            <button class="btn btn--new" id="add-card-modal">
+                <i class="material-icons md-18 mr-3">add</i
+                ><span>Add New Card</span>
+            </button>
+        </div>
+    </body>
+</html>

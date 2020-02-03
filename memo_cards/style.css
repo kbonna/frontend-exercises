@@ -1,0 +1,238 @@
+@import url("https://fonts.googleapis.com/css?family=Quicksand&display=swap");
+:root {
+  --margin-bottom: 1.5rem;
+  --col-gray: #666;
+  --col-dark-gray: #222;
+}
+
+*,
+*::before,
+*::after {
+  padding: 0;
+  margin: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.material-icons.md-18 {
+  font-size: 18px;
+}
+
+.material-icons.mr-3 {
+  margin-right: 3px;
+}
+
+body {
+  font-family: 'Quicksand', sans-serif;
+  min-height: 100vh;
+  display: -ms-grid;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+
+span,
+i {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 18px;
+}
+
+.container {
+  padding: 2rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  position: relative;
+}
+
+.title {
+  font-size: 1.75rem;
+  margin-bottom: var(--margin-bottom);
+}
+
+.btn {
+  background-color: white;
+  min-width: 120px;
+  height: 2rem;
+  font-family: inherit;
+  border: 1px solid var(--col-gray);
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.btn--small-right-absolute {
+  position: absolute;
+  -webkit-transform: translate(calc(-2rem + 10%)) scale(0.8);
+          transform: translate(calc(-2rem + 10%)) scale(0.8);
+  right: 0;
+}
+
+.btn--clear {
+  position: absolute;
+  left: 3rem;
+  bottom: 3rem;
+}
+
+.btn__icon {
+  margin-right: 0.3em;
+}
+
+.cards {
+  height: 200px;
+  width: 400px;
+  position: relative;
+}
+
+.card {
+  width: inherit;
+  height: inherit;
+  margin-bottom: var(--margin-bottom);
+}
+
+.card__inner {
+  position: relative;
+  -webkit-box-shadow: 0 0 6px 2px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 0 6px 2px rgba(0, 0, 0, 0.3);
+  height: 100%;
+  -webkit-transition: all 500ms;
+  transition: all 500ms;
+  -webkit-transform-style: preserve-3d;
+          transform-style: preserve-3d;
+}
+
+.card__hint {
+  position: absolute;
+  right: 0.5em;
+  top: 0.5em;
+  color: #999;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+.card__front, .card__back {
+  background-color: white;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+  display: -ms-grid;
+  display: grid;
+  place-items: center;
+}
+
+.card__front p,
+.card__back p {
+  font-size: 1.25rem;
+  color: var(--col-dark-gray);
+}
+
+.card__back {
+  -webkit-transform: rotateX(180deg);
+          transform: rotateX(180deg);
+}
+
+.card__inner--flipped {
+  -webkit-transform: rotateX(180deg);
+          transform: rotateX(180deg);
+}
+
+.card {
+  position: absolute;
+  -webkit-transition: opacity 300ms ease-in-out, -webkit-transform 500ms ease-in-out;
+  transition: opacity 300ms ease-in-out, -webkit-transform 500ms ease-in-out;
+  transition: opacity 300ms ease-in-out, transform 500ms ease-in-out;
+  transition: opacity 300ms ease-in-out, transform 500ms ease-in-out, -webkit-transform 500ms ease-in-out;
+}
+
+.card--visible {
+  -webkit-transform: translateX(0);
+          transform: translateX(0);
+  opacity: 1;
+}
+
+.card--invisible-right {
+  -webkit-transform: translateX(100%);
+          transform: translateX(100%);
+  opacity: 0;
+}
+
+.card--invisible-left {
+  -webkit-transform: translateX(-100%);
+          transform: translateX(-100%);
+  opacity: 0;
+}
+
+.current {
+  color: var(--col-dark-gray);
+  margin-top: var(--margin-bottom);
+}
+
+.current__number {
+  margin: 0 2rem;
+  line-height: 18px;
+}
+
+.current__icon {
+  cursor: pointer;
+}
+
+.modal {
+  position: absolute;
+  width: 100%;
+  height: 100vh;
+  background-color: #eee;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.modal--hidden {
+  display: none;
+}
+
+.modal__title {
+  position: relative;
+}
+
+.modal__field {
+  width: 350px;
+  height: 80px;
+  padding: 0.75em;
+  margin-bottom: var(--margin-bottom);
+  resize: none;
+}
+
+.modal__label {
+  width: 350px;
+  margin-bottom: calc(0.5 * var(--margin-bottom));
+}
+
+.modal__close {
+  display: inline-block;
+  position: absolute;
+  cursor: pointer;
+  right: -5rem;
+  top: 0.5em;
+}
+/*# sourceMappingURL=style.css.map */
