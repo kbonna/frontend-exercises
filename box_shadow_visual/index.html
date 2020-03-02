@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Box Shadow Visual</title>
+        <link rel="stylesheet" href="style.css" />
+        <script src="app.js" defer></script>
+    </head>
+    <body>
+        <!-- Box -->
+        <div class="box-wrapper">
+            <div id="box"></div>
+        </div>
+        <!-- Menu -->
+        <aside class="menu">
+            <!-- h-offset -->
+            <label class="menu__label" for="h-offset">Horizontal offset</label>
+            <input
+                type="number"
+                name="h-offset"
+                id="h-offset"
+                class="menu__item menu__item--number"
+                value="2"
+                autocomplete="off"
+            />
+            <!-- v-offset -->
+            <label class="menu__label" for="v-offset">Vertical offset</label>
+            <input
+                type="number"
+                name="v-offset"
+                id="v-offset"
+                class="menu__item menu__item--number"
+                value="2"
+                autocomplete="off"
+            />
+            <!-- blur-radius -->
+            <label class="menu__label" for="blur-radius">Blur radius</label>
+            <input
+                type="number"
+                name="blur-radius"
+                id="blur-radius"
+                class="menu__item menu__item--number"
+                value="3"
+                autocomplete="off"
+            />
+            <!-- spread-radius -->
+            <label class="menu__label" for="spread-radius">Spread radius</label>
+            <input
+                type="number"
+                name="spread-radius"
+                id="spread-radius"
+                class="menu__item menu__item--number"
+                value="1"
+                autocomplete="off"
+            />
+            <!-- shadow-color -->
+            <label class="menu__label" for="shadow-color">Shadow Color</label>
+            <input
+                type="color"
+                name="shadow-color"
+                id="shadow-color"
+                class="menu__item menu__item--color"
+                value="#333333"
+                autocomplete="off"
+            />
+            <!-- background-color -->
+            <label class="menu__label" for="background-color"
+                >Background Color</label
+            >
+            <input
+                type="color"
+                name="background-color"
+                id="background-color"
+                class="menu__item menu__item--color"
+                value="#eeeeee"
+                autocomplete="off"
+            />
+            <!-- box-color -->
+            <label class="menu__label" for="box-color">Box Color</label>
+            <input
+                type="color"
+                name="box-color"
+                id="box-color"
+                class="menu__item menu__item--color"
+                value="#800000"
+                autocomplete="off"
+            />
+            <!-- direction -->
+            <label class="menu__label" for="inset">Direction</label>
+            <select name="inset" id="inset" class="menu__item">
+                <option value="" default>Default</option>
+                <option value="inset">Inset</option>
+            </select>
+        </aside>
+    </body>
+</html>

@@ -1,0 +1,95 @@
+*,
+*::before,
+*::after {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --h-offset: 2;
+  --v-offset: 2;
+  --blur-radius: 3;
+  --spread-radius: 1;
+  --shadow-color: #333333;
+  --background-color: #eeeeee;
+  --box-color: #800000;
+  --inset: ;
+}
+
+body {
+  min-height: 100vh;
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: 1fr minmax(200px, 300px);
+      grid-template-columns: 1fr minmax(200px, 300px);
+  color: #ddd;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-size: 17px;
+}
+
+@media screen and (max-width: 500px) {
+  body {
+    -ms-grid-columns: minmax(200px, 1fr);
+        grid-template-columns: minmax(200px, 1fr);
+  }
+}
+
+.box-wrapper {
+  background: var(--background-color);
+  display: -ms-grid;
+  display: grid;
+  place-items: center;
+}
+
+#box {
+  width: 200px;
+  height: 300px;
+  margin: 50px;
+  background-color: var(--box-color);
+  -webkit-box-shadow: calc(var(--h-offset) * 1px) calc(var(--v-offset) * 1px) calc(var(--blur-radius) * 1px) calc(var(--spread-radius) * 1px) var(--shadow-color) var(--inset);
+          box-shadow: calc(var(--h-offset) * 1px) calc(var(--v-offset) * 1px) calc(var(--blur-radius) * 1px) calc(var(--spread-radius) * 1px) var(--shadow-color) var(--inset);
+}
+
+.menu {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: stretch;
+      -ms-flex-align: stretch;
+          align-items: stretch;
+  padding: 2rem;
+  background-color: #222;
+}
+
+.menu__label {
+  margin-bottom: 3px;
+}
+
+.menu__item {
+  width: 100%;
+  margin-bottom: 1rem;
+  background-color: #333;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+.menu__item--number {
+  padding: 0.25em 0 0.25em 1em;
+}
+
+.menu__item:focus {
+  border: 1px solid lime;
+}
+
+select {
+  font-family: inherit;
+  font-size: inherit;
+}
+/*# sourceMappingURL=style.css.map */
